@@ -9,11 +9,17 @@ public class PaintInverse : MonoBehaviour
 {
     public Camera cam;
     [SerializeField]
-    public Texture2D maskImg;
+    public GameObject g;
+    public Texture2D mask;
 
+    bool notBlack(Color color)
+    {
+        return color.r != 0.0f && color.g != 0.0f && color.b != 0.0f;
+    }
+
+    // Code Reference: https://stackoverflow.com/questions/45854076/set-color-for-each-vertex-in-a-triangle
     void Start()
     {
-        Debug.Log(Screen.width);
         cam = GetComponent<Camera>();
         // Ensure mask size is same as screen size
         float sceneWidth = 10;
@@ -21,44 +27,69 @@ public class PaintInverse : MonoBehaviour
         float desiredHalfHeight = 0.5f * unitsPerPixel * Screen.height;
         cam.orthographicSize = desiredHalfHeight;
 
-        // Get uv coordinates matched with vertices of mesh code taken from documentation
-        // Mesh mesh = GetComponentInChildren<MeshFilter>().mesh;
-        // Vector3[] vertices = mesh.vertices;
-        // Vector2[] uvs = new Vector2[vertices.Length];
-        // Vector2[] vertices_screen_pos = new Vector2[vertices.Length];
-
-        // //SkinnedMeshRenderer rend = GetComponentInChildren<SkinnedMeshRenderer>();
-        // MeshRenderer rend = GetComponentInChildren<MeshRenderer>();
-        // Texture2D tex = rend.material.mainTexture as Texture2D;
-
-        // for (int i = 0; i < uvs.Length; i++)
-        // {
-        //     uvs[i] = new Vector2(vertices[i].x, vertices[i].z);
-        // }
-        // mesh.uv = uvs;
-
-        // for (int i = 0; i < uvs.Length; i++)
-        // {
-        //     vertices_screen_pos[i] = cam.WorldToScreenPoint(gameObject.transform.TransformPoint(vertices[i]));
-        // }
-        // Debug.Log(vertices_screen_pos[0]);
+        Mesh mesh = GetComponentInChildren<MeshFilter>().mesh;
+        SplitMesh(mesh);
+        SetColors(mesh);
     }
 
-    bool notBlack(Color color)
+    void SplitMesh(Mesh mesh)
     {
-        return color.r != 0.0f && color.g != 0.0f && color.b != 0.0f;
+
+        int[] triangles = mesh.triangles;
+        Vector3[] verts = mesh.vertices;
+        Vector3[] normals = mesh.normals;
+        Vector2[] uvs = mesh.uv;
+
+        Vector3[] newVerts;
+        Vector3[] newNormals;
+        Vector2[] newUvs;
+
+        int n = triangles.Length;
+        newVerts = new Vector3[n];
+        newNormals = new Vector3[n];
+        newUvs = new Vector2[n];
+
+        for (int i = 0; i < n; i++)
+        {
+            newVerts[i] = verts[triangles[i]];
+            newNormals[i] = normals[triangles[i]];
+            if (uvs.Length > 0)
+            {
+                newUvs[i] = uvs[triangles[i]];
+            }
+            triangles[i] = i;
+        }
+        mesh.vertices = newVerts;
+        mesh.normals = newNormals;
+        mesh.uv = newUvs;
+        mesh.triangles = triangles;
+        Debug.Log(mesh.triangles[1]);
+        Debug.Log(mesh.vertices.Length);
+        Debug.Log(mesh.triangles.Length);
+        Debug.Log(mesh.uv.Length);
     }
 
-    // void SaveNewSkin()
-    // {
-    //     // Save new skin as image
-    //     byte[] newSkin = tex.EncodeToPNG();
-    //     string filename = "new_skin.png";
-    //     File.WriteAllBytes(Application.dataPath + "/" + filename, newSkin);
-    //     AssetDatabase.Refresh();
-    // }
-
-    void Update()
+    void SetColors(Mesh mesh)
     {
+        Color[] colors = new Color[mesh.vertexCount];
+
+        Vector3[] screen_positions = new Vector3[mesh.vertexCount];
+        for (int i = 0; i < screen_positions.Length; i++)
+        {
+            screen_positions[i] = cam.WorldToScreenPoint(g.transform.TransformPoint(mesh.vertices[i]));
+            if (notBlack(mask.GetPixel((int)screen_positions[i].x, (int)screen_positions[i].y - 60)))
+            {
+                colors[i] = Color.blue;
+            }
+            else
+            {
+                colors[i] = Color.white;
+            }
+        }
+
+        mesh.colors = colors;
+
+
     }
+
 }

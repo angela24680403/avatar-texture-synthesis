@@ -40,13 +40,14 @@ Shader "Custom/MaskShader"
 
                 // this will have origin at bottom left corner and the width and height of screen right?
                 o.screenPos = ComputeScreenPos(o.clipPos);
+                //o.worldPos = mul(unity_ObjectToWorld, v.vertex);
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 color;
-                fixed4 maskPixel = tex2D(_MaskTex, i.screenPos.xy * _ScreenParams.zw);
+                fixed4 maskPixel = tex2D(_MaskTex, i.screenPos.xy);
                 if (maskPixel.r == 1) {
                     color = fixed4(1,0,0,0);
                 } else {
