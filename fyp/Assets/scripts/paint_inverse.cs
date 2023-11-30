@@ -11,6 +11,7 @@ public class PaintInverse : MonoBehaviour
     [SerializeField]
     public GameObject g;
     public Texture2D mask;
+    public Texture2D inpaint;
 
     bool notBlack(Color color)
     {
@@ -77,9 +78,9 @@ public class PaintInverse : MonoBehaviour
         for (int i = 0; i < screen_positions.Length; i++)
         {
             screen_positions[i] = cam.WorldToScreenPoint(g.transform.TransformPoint(mesh.vertices[i]));
-            if (notBlack(mask.GetPixel((int)screen_positions[i].x, (int)screen_positions[i].y - 60)))
+            if (notBlack(mask.GetPixel((int)screen_positions[i].x, (int)screen_positions[i].y)))
             {
-                colors[i] = Color.blue;
+                colors[i] = inpaint.GetPixel((int)screen_positions[i].x, (int)screen_positions[i].y);
             }
             else
             {
@@ -88,7 +89,6 @@ public class PaintInverse : MonoBehaviour
         }
 
         mesh.colors = colors;
-
 
     }
 
