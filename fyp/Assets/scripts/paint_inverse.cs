@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 using System.Linq;
+using System;
+using System.Drawing;
+using Unity.VisualScripting;
 
 public class PaintInverse : MonoBehaviour
 {
@@ -14,7 +17,7 @@ public class PaintInverse : MonoBehaviour
     public Texture2D inpaint;
     public Texture2D avatarTexture;
 
-    bool notBlack(Color color)
+    bool notBlack(UnityEngine.Color color)
     {
         return color.r != 0.0f && color.g != 0.0f && color.b != 0.0f;
     }
@@ -22,7 +25,6 @@ public class PaintInverse : MonoBehaviour
     void Start()
     {
         cam = GetComponent<Camera>();
-
         // Ensure mask size is same as screen size
         float sceneWidth = 10;
         float unitsPerPixel = sceneWidth / Screen.width;
@@ -31,7 +33,10 @@ public class PaintInverse : MonoBehaviour
 
         Mesh mesh = GetComponentInChildren<MeshFilter>().mesh;
         SplitMesh(mesh);
+        Debug.Log("Split mesh.");
         IterateThroughTexturePixels(mesh);
+        Debug.Log("Colour in.");
+        avatarTexture.Apply();
     }
 
     void SplitMesh(Mesh mesh)
@@ -69,40 +74,50 @@ public class PaintInverse : MonoBehaviour
 
     float GetTriangleArea(Vector2 p1, Vector2 p2, Vector2 p3)
     {
-        return abs((p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y)) / 2.0);
+        return (float)Math.Abs((p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y)) / 2.0);
     }
 
     bool IsPointInsideTriangle(Vector2[] triangle2DVertices, Vector2 pointUV)
     {
         // ref: https://www.geeksforgeeks.org/check-whether-a-given-point-lies-inside-a-triangle-or-not/
-        /* Calculate area of triangle ABC */
         double A = GetTriangleArea(triangle2DVertices[0], triangle2DVertices[1], triangle2DVertices[2]);
-
-        /* Calculate area of triangle PBC */
         double A1 = GetTriangleArea(pointUV, triangle2DVertices[1], triangle2DVertices[2]);
-
-        /* Calculate area of triangle PAC */
         double A2 = GetTriangleArea(pointUV, triangle2DVertices[0], triangle2DVertices[2]);
-
-        /* Calculate area of triangle PAB */
         double A3 = GetTriangleArea(pointUV, triangle2DVertices[0], triangle2DVertices[1]);
-
-        /* Check if sum of A1, A2 and A3 is same as A */
         return (A == A1 + A2 + A3);
     }
 
     (Vector2[], int) GetContainingTriangle(Vector2 point, Mesh mesh)
     {
-        for (int n = 0; n < mesh.uv.Count; n = n + 3)
+        Vector2[] curr_triangle;
+        for (int n = 0; n < mesh.vertexCount; n = n + 3)
         {
-            Vector2[] triangle = { mesh.uv[n], mesh.uv[n + 1], mesh.uv[n + 2] };
-
-            if (IsPointInsideTriangle(triangle, point))
+            curr_triangle = new Vector2[] { mesh.uv[n], mesh.uv[n + 1], mesh.uv[n + 2] };
+            if (IsPointInsideTriangle(curr_triangle, point))
             {
-                return (triangle, n);
+                Debug.Log(n);
+                return (curr_triangle, n);
             }
         }
-        return null;
+        curr_triangle = new Vector2[] { mesh.uv[0], mesh.uv[1], mesh.uv[2] };
+        return (curr_triangle, 0);
+    }
+
+    float[] Barycentric(Vector2 a, Vector2 b, Vector2 c, Vector2 p)
+    {
+        // Check if ComputeBarycentricCoordinates computes the same
+        Vector2 v0 = b - a, v1 = c - a, v2 = p - a;
+        float d00 = Vector2.Dot(v0, v0);
+        float d01 = Vector2.Dot(v0, v1);
+        float d11 = Vector2.Dot(v1, v1);
+        float d20 = Vector2.Dot(v2, v0);
+        float d21 = Vector2.Dot(v2, v1);
+        float denom = d00 * d11 - d01 * d01;
+        float v = (d11 * d20 - d01 * d21) / denom;
+        float w = (d00 * d21 - d01 * d20) / denom;
+        float u = 1.0f - v - w;
+        float[] baryCoord = { u, v, w };
+        return baryCoord;
     }
 
     float[] ComputeBarycentricCoordinates(Vector2[] triangle2DVertices, Vector2 P)
@@ -111,17 +126,19 @@ public class PaintInverse : MonoBehaviour
         Vector2 B = triangle2DVertices[1];
         Vector2 C = triangle2DVertices[2];
 
-        double detT = (B.x - A.x) * (C.y - A.y) - (C.x - A.x) * (B.y - A.y);
+        float detT = (B.x - A.x) * (C.y - A.y) - (C.x - A.x) * (B.y - A.y);
 
         // Calculate barycentric coordinates
-        double u = ((P.y - A.y) * (C.x - A.x) - (P.x - A.x) * (C.y - A.y)) / detT;
-        double v = ((P.y - A.y) * (B.x - A.x) - (P.x - A.x) * (B.y - A.y)) / detT;
-        double w = 1 - u - v;
+        float u = ((P.y - A.y) * (C.x - A.x) - (P.x - A.x) * (C.y - A.y)) / detT;
+        float v = ((P.y - A.y) * (B.x - A.x) - (P.x - A.x) * (B.y - A.y)) / detT;
+        float w = 1 - u - v;
 
-        return { u, v, w };
+        float[] baryCoord = { u, v, w };
+
+        return baryCoord;
     }
 
-    Vector3[] Get3DTriangle(float[] baryCoord, Vector3[] triangle3DVertices)
+    Vector3 Get3DTriangle(float[] baryCoord, Vector3[] triangle3DVertices)
     {
         Vector3 A = triangle3DVertices[0];
         Vector3 B = triangle3DVertices[1];
@@ -134,37 +151,51 @@ public class PaintInverse : MonoBehaviour
         float pY = u * A.y + v * B.y + w * C.y;
         float pZ = u * A.z + v * B.z + w * C.z;
 
-        Vector3[] point3D = { pX, pY, pZ };
+        Vector3 point3D = new Vector3(pX, pY, pZ);
+        return point3D;
     }
 
     void IterateThroughTexturePixels(Mesh mesh)
     {
-        for (int x = 0; x < avatarTexture.Width; x++)
+        for (int x = 0; x < avatarTexture.width; x++)
         {
-            for (int y = 0; y < avatarTexture.Height; y++)
+            for (int y = 0; y < avatarTexture.height; y++)
             {
-                Vector2 point = new Vector2((float)x / avatarTexture.Width, (float)y / avatarTexture.Height);
+                Vector2 point = new Vector2((float)x / avatarTexture.width, (float)y / avatarTexture.height);
                 var (triangle, n) = GetContainingTriangle(point, mesh);
                 float[] baryCoord = ComputeBarycentricCoordinates(triangle, point);
                 Vector3[] triangle3DVertices = { mesh.vertices[n], mesh.vertices[n + 1], mesh.vertices[n + 2] };
                 Vector3 mapped3DPoint = Get3DTriangle(baryCoord, triangle3DVertices);
-                Vector2 screenPos = cam.WorldToScreenPoint(g.transform.TransformPoint(mapped3DPoint));
-                SetColor(screenPos);
+                Vector2 screenPos = cam.WorldToScreenPoint(g.transform.TransformPoint(mesh.vertices[n]));
+                SetColor(screenPos, new Vector2(x, y));
             }
         }
     }
 
-    void SetColor(Vector2 screenPos)
+    void SetColor(Vector2 screenPos, Vector2 point)
     {
+        UnityEngine.Color color;
         if (notBlack(mask.GetPixel((int)screenPos.x, (int)screenPos.y)))
         {
-            colors[i] = inpaint.GetPixel((int)screenPos.x, (int)screenPos.y);
+            color = inpaint.GetPixel((int)screenPos.x, (int)screenPos.y);
+            //color = UnityEngine.Color.red;
         }
         else
         {
-            colors[i] = Color.white;
+            color = UnityEngine.Color.white;
         }
+        avatarTexture.SetPixel((int)point.x, (int)point.y, color);
     }
 
-
+    void ShowTriangles(Mesh mesh)
+    {
+        UnityEngine.Color[] colors = new UnityEngine.Color[mesh.vertexCount];
+        for (int i = 0; i < colors.Length; i += 3)
+        {
+            colors[i] = UnityEngine.Color.red;
+            colors[i + 1] = UnityEngine.Color.green;
+            colors[i + 2] = UnityEngine.Color.blue;
+        }
+        mesh.colors = colors;
+    }
 }
