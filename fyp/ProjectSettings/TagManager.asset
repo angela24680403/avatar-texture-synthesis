@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Cube
+  - Camera
+  - Front Camera
+  - Back Camera
   layers:
   - Default
   - TransparentFX
