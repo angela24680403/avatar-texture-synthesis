@@ -70,7 +70,6 @@ public class Screenshot : MonoBehaviour
         myCamera.targetTexture = RenderTexture.GetTemporary(width, height, 16);
         takeScreenshotOnNextFrame = true;
         UnityEngine.Debug.Log("..!");
-
     }
 
 }
