@@ -15,7 +15,7 @@ public class TexturePainter : MonoBehaviour
 	public Sprite cursorPaint; // Cursor for the differen functions 
 	public RenderTexture canvasTexture; // Render Texture that looks at our Base Texture and the painted brushes
 	public Material baseMaterial; // The material of our base texture (Were we will save the painted texture)
-	float brushSize = 1.0f; //The size of our brush
+	float brushSize = 1.8f; //The size of our brush
 	Color brushColor; //The selected color
 	int brushCounter = 0, MAX_BRUSH_COUNT = 1000; //To avoid having millions of brushes
 	bool saving = false; //Flag to check if we are saving the texture
@@ -39,6 +39,10 @@ public class TexturePainter : MonoBehaviour
 	{
 		if (Input.GetMouseButton(0))
 		{
+			if (brushSize >= 0.2)
+			{
+				brushSize /= 2;
+			}
 			for (int x = 250; x < 490; x++)
 			{
 				for (int y = 20; y < 300; y++)
@@ -50,7 +54,6 @@ public class TexturePainter : MonoBehaviour
 				}
 				SaveTextureToFile(toTexture2D(canvasTexture));
 			}
-
 			Debug.Log("done");
 
 
@@ -73,7 +76,7 @@ public class TexturePainter : MonoBehaviour
 			brushColor.a = brushSize * 2.0f; // Brushes have alpha to have a merging effect when painted over.
 			brushObj.transform.parent = brushContainer.transform; //Add the brush to our container to be wiped later
 			brushObj.transform.localPosition = uvWorldPosition; //The position of the brush (in the UVMap)
-			brushObj.transform.localScale = Vector3.one * 0.1f;//The size of the brush
+			brushObj.transform.localScale = Vector3.one * brushSize;//The size of the brush
 		}
 		brushCounter++; //Add to the max brushes
 		if (brushCounter >= MAX_BRUSH_COUNT)
