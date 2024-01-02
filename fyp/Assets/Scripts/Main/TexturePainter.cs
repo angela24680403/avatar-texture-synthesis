@@ -11,7 +11,7 @@ using System.Collections;
 public class TexturePainter : MonoBehaviour
 {
 	public GameObject brushCursor, brushContainer; //The cursor that overlaps the model and our container for the brushes painted
-	public Camera sceneCamera, canvasCam;  //The camera that looks at the model, and the camera that looks at the canvas.
+	public Camera canvasCam;  //The camera that looks at the canvas.
 	public Sprite cursorPaint; // Cursor for the differen functions 
 	public RenderTexture canvasTexture; // Render Texture that looks at our Base Texture and the painted brushes
 	public Material baseMaterial; // The material of our base texture (Were we will save the painted texture)
@@ -21,7 +21,8 @@ public class TexturePainter : MonoBehaviour
 	bool saving = false; //Flag to check if we are saving the texture
 
 	[SerializeField]
-	public Texture2D inpaint;
+	public Texture2D frontInpaint, backInpaint;
+	public Camera frontCam, backCam;
 
 	Texture2D toTexture2D(RenderTexture rTex)
 	{
@@ -41,29 +42,38 @@ public class TexturePainter : MonoBehaviour
 			{
 				brushSize /= 2;
 			}
-			for (int x = 250; x < 490; x++)
+			SingleCamPaint(frontCam, frontInpaint);
+			if (backCam != null)
 			{
-				for (int y = 20; y < 300; y++)
-				{
-					Vector3 pos = new Vector3((float)x, (float)y, 0.0f);
-					DoAction(pos);
-					Debug.Log("Done");
-				}
-				SaveTextureToFile(toTexture2D(canvasTexture));
+				SingleCamPaint(backCam, backInpaint);
 			}
 		}
 	}
 
-	void DoAction(Vector3 pos)
+	void SingleCamPaint(Camera cam, Texture2D inpaintTexture)
+	{
+		for (int x = 250; x < 490; x++)
+		{
+			for (int y = 20; y < 300; y++)
+			{
+				Vector3 pos = new Vector3((float)x, (float)y, 0.0f);
+				DoAction(pos, cam, inpaintTexture);
+				Debug.Log("Done");
+			}
+			SaveTextureToFile(toTexture2D(canvasTexture));
+		}
+	}
+
+	void DoAction(Vector3 pos, Camera cam, Texture2D inpaintTexture)
 	{
 		if (saving)
 			return;
 		Vector3 uvWorldPosition = Vector3.zero;
-		if (HitTestUVPosition(pos, ref uvWorldPosition))
+		if (HitTestUVPosition(pos, cam, ref uvWorldPosition))
 		{
 			GameObject brushObj;
 			brushObj = (GameObject)Instantiate(Resources.Load("BrushEntity")); //Paint a brush
-			Color fromInpaint = inpaint.GetPixel((int)pos.x, (int)pos.y); //inpaint.GetPixel((int)pos.x, (int)pos.y);
+			Color fromInpaint = inpaintTexture.GetPixel((int)pos.x, (int)pos.y); //inpaint.GetPixel((int)pos.x, (int)pos.y);
 			Debug.Log(pos);
 			brushObj.GetComponent<SpriteRenderer>().color = fromInpaint; //brushColor; //Set the brush color
 			brushColor.a = brushSize * 2.0f; // Brushes have alpha to have a merging effect when painted over.
@@ -80,11 +90,11 @@ public class TexturePainter : MonoBehaviour
 		}
 	}
 
-	bool HitTestUVPosition(Vector3 pos, ref Vector3 uvWorldPosition)
+	bool HitTestUVPosition(Vector3 pos, Camera cam, ref Vector3 uvWorldPosition)
 	{
 		RaycastHit hit;
 		Vector3 cursorPos = new Vector3(pos.x, pos.y, 0.0f);
-		Ray cursorRay = sceneCamera.ScreenPointToRay(cursorPos);
+		Ray cursorRay = cam.ScreenPointToRay(cursorPos);
 		if (Physics.Raycast(cursorRay, out hit, 200))
 		{
 			MeshCollider meshCollider = hit.collider as MeshCollider;
