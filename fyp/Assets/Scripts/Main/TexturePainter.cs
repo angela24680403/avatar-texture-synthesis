@@ -27,13 +27,11 @@ public class TexturePainter : MonoBehaviour
 	{
 		// https://stackoverflow.com/questions/44264468/convert-rendertexture-to-texture2d#:~:text=Create%20new%20Texture2D%20%2C%20use%20RenderTexture,to%20apply%20the%20changed%20pixels.
 		Texture2D tex = new Texture2D(rTex.width, rTex.height, TextureFormat.RGB24, false);
-		// ReadPixels looks at the active RenderTexture.
 		RenderTexture.active = rTex;
 		tex.ReadPixels(new Rect(0, 0, rTex.width, rTex.height), 0, 0);
 		tex.Apply();
 		return tex;
 	}
-
 
 	void Update()
 	{
@@ -49,18 +47,13 @@ public class TexturePainter : MonoBehaviour
 				{
 					Vector3 pos = new Vector3((float)x, (float)y, 0.0f);
 					DoAction(pos);
-					Debug.Log(pos);
-
+					Debug.Log("Done");
 				}
 				SaveTextureToFile(toTexture2D(canvasTexture));
 			}
-			Debug.Log("done");
-
-
 		}
 	}
 
-	//The main action, instantiates a brush or decal entity at the clicked position on the UV map
 	void DoAction(Vector3 pos)
 	{
 		if (saving)
@@ -126,13 +119,12 @@ public class TexturePainter : MonoBehaviour
 		}
 		Invoke("ShowCursor", 0.1f);
 	}
-	//Show again the user cursor (To avoid saving it to the texture)
+
 	void ShowCursor()
 	{
 		saving = false;
 	}
 
-	////////////////// OPTIONAL METHODS //////////////////
 	void SaveTextureToFile(Texture2D savedTexture)
 	{
 		Debug.Log("Saving texture...");
