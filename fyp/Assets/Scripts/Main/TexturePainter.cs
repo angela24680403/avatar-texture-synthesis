@@ -23,6 +23,8 @@ public class TexturePainter : MonoBehaviour
 	[SerializeField]
 	public Texture2D frontInpaint, backInpaint;
 	public Camera frontCam, backCam;
+	public float offset;
+
 
 	Texture2D toTexture2D(RenderTexture rTex)
 	{
@@ -38,31 +40,55 @@ public class TexturePainter : MonoBehaviour
 	{
 		if (Input.GetMouseButton(0))
 		{
-			if (brushSize >= 0.2)
+			if (brushSize >= 0.4)
 			{
-				brushSize /= 2;
+
+				SingleIterationForwardMapping(frontCam, frontInpaint, 1);
+				SingleIterationForwardMapping(frontCam, frontInpaint, 2);
+				if (brushSize >= 0.2)
+				{
+					brushSize /= 2;
+				}
+
 			}
-			SingleCamPaint(frontCam, frontInpaint);
-			if (backCam != null)
-			{
-				SingleCamPaint(backCam, backInpaint);
-			}
+
+
+
+			SingleIterationForwardMapping(frontCam, frontInpaint, 0);
+
+			// if (backCam != null)
+			// {
+			// 	SingleCamPaint(backCam, backInpaint);
+			// }
 		}
 	}
 
-	void SingleCamPaint(Camera cam, Texture2D inpaintTexture)
+	void moveCameraByOffset(Camera cam, int shift_status)
 	{
+		Vector3 new_pos = cam.transform.position;
+		new_pos.x = new_pos.x + shift_status * offset;
+		cam.transform.position = new_pos;
+	}
+
+	void SingleIterationForwardMapping(Camera cam, Texture2D inpaintTexture, int shift_status)
+	{
+		Vector3 old_pos = cam.transform.position;
+		moveCameraByOffset(cam, shift_status);
+		Debug.Log(cam.transform.position);
 		for (int x = 250; x < 490; x++)
 		{
 			for (int y = 20; y < 300; y++)
 			{
 				Vector3 pos = new Vector3((float)x, (float)y, 0.0f);
+				pos.x = pos.x + shift_status * offset;
 				DoAction(pos, cam, inpaintTexture);
 				Debug.Log("Done");
 			}
 			SaveTextureToFile(toTexture2D(canvasTexture));
 		}
+		cam.transform.position = old_pos;
 	}
+
 
 	void DoAction(Vector3 pos, Camera cam, Texture2D inpaintTexture)
 	{
@@ -74,7 +100,6 @@ public class TexturePainter : MonoBehaviour
 			GameObject brushObj;
 			brushObj = (GameObject)Instantiate(Resources.Load("BrushEntity")); //Paint a brush
 			Color fromInpaint = inpaintTexture.GetPixel((int)pos.x, (int)pos.y); //inpaint.GetPixel((int)pos.x, (int)pos.y);
-			Debug.Log(pos);
 			brushObj.GetComponent<SpriteRenderer>().color = fromInpaint; //brushColor; //Set the brush color
 			brushColor.a = brushSize * 2.0f; // Brushes have alpha to have a merging effect when painted over.
 			brushObj.transform.parent = brushContainer.transform; //Add the brush to our container to be wiped later
