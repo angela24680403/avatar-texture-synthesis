@@ -21,8 +21,8 @@ public class TexturePainter : MonoBehaviour
 	bool saving = false; //Flag to check if we are saving the texture
 
 	[SerializeField]
-	public Texture2D frontInpaint, backInpaint;
-	public Camera frontCam, backCam;
+	public Texture2D frontInpaint, frontLeftInpaint, frontRightInpaint, backInpaint;
+	public Camera frontCam, frontLeftCam, frontRightCam, backCam;
 	public float offset;
 
 
@@ -40,53 +40,37 @@ public class TexturePainter : MonoBehaviour
 	{
 		if (Input.GetMouseButton(0))
 		{
-			if (brushSize >= 0.4)
+			/*if (brushSize >= 0.2)
 			{
+				brushSize /= 2;
+			}*/
+			brushSize = 0.1f;
+			SingleIterationForwardMapping(frontCam, frontInpaint);
 
-				SingleIterationForwardMapping(frontCam, frontInpaint, 1);
-				SingleIterationForwardMapping(frontCam, frontInpaint, 2);
-				if (brushSize >= 0.2)
-				{
-					brushSize /= 2;
-				}
-
+			if (backCam != null)
+			{
+				SingleIterationForwardMapping(backCam, backInpaint);
 			}
-
-
-
-			SingleIterationForwardMapping(frontCam, frontInpaint, 0);
-
-			// if (backCam != null)
-			// {
-			// 	SingleCamPaint(backCam, backInpaint);
-			// }
+			if (frontLeftCam != null && frontRightCam)
+			{
+				SingleIterationForwardMapping(frontLeftCam, frontLeftInpaint);
+				SingleIterationForwardMapping(frontRightCam, frontRightInpaint);
+			}
 		}
-	}
+    }
 
-	void moveCameraByOffset(Camera cam, int shift_status)
+	void SingleIterationForwardMapping(Camera cam, Texture2D inpaintTexture)
 	{
-		Vector3 new_pos = cam.transform.position;
-		new_pos.x = new_pos.x + shift_status * offset;
-		cam.transform.position = new_pos;
-	}
-
-	void SingleIterationForwardMapping(Camera cam, Texture2D inpaintTexture, int shift_status)
-	{
-		Vector3 old_pos = cam.transform.position;
-		moveCameraByOffset(cam, shift_status);
-		Debug.Log(cam.transform.position);
 		for (int x = 250; x < 490; x++)
 		{
 			for (int y = 20; y < 300; y++)
 			{
 				Vector3 pos = new Vector3((float)x, (float)y, 0.0f);
-				pos.x = pos.x + shift_status * offset;
 				DoAction(pos, cam, inpaintTexture);
 				Debug.Log("Done");
 			}
 			SaveTextureToFile(toTexture2D(canvasTexture));
 		}
-		cam.transform.position = old_pos;
 	}
 
 
