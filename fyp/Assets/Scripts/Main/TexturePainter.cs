@@ -40,24 +40,45 @@ public class TexturePainter : MonoBehaviour
 	{
 		if (Input.GetMouseButton(0))
 		{
-			/*if (brushSize >= 0.2)
-			{
-				brushSize /= 2;
-			}*/
-			brushSize = 0.1f;
-			SingleIterationForwardMapping(frontCam, frontInpaint);
-
-			if (backCam != null)
-			{
-				SingleIterationForwardMapping(backCam, backInpaint);
-			}
-			if (frontLeftCam != null && frontRightCam)
-			{
-				SingleIterationForwardMapping(frontLeftCam, frontLeftInpaint);
-				SingleIterationForwardMapping(frontRightCam, frontRightInpaint);
-			}
+			ChangeBrushSizeWithLayers();
 		}
-    }
+	}
+
+	void SmallBrushInAllLayers()
+	{
+		brushSize = 0.1f;
+		SingleIterationForwardMapping(frontCam, frontInpaint);
+
+		if (backCam != null)
+		{
+			SingleIterationForwardMapping(backCam, backInpaint);
+		}
+		// if (frontLeftCam != null && frontRightCam)
+		// {
+		// 	SingleIterationForwardMapping(frontLeftCam, frontLeftInpaint);
+		// 	SingleIterationForwardMapping(frontRightCam, frontRightInpaint);
+		// }
+	}
+
+	void ChangeBrushSizeWithLayers()
+	{
+		if (brushSize >= 0.2)
+		{
+			brushSize /= 2;
+		}
+		SingleIterationForwardMapping(frontCam, frontInpaint);
+
+		if (backCam != null)
+		{
+			SingleIterationForwardMapping(backCam, backInpaint);
+		}
+		if (frontLeftCam != null && frontRightCam)
+		{
+			SingleIterationForwardMapping(frontLeftCam, frontLeftInpaint);
+			SingleIterationForwardMapping(frontRightCam, frontRightInpaint);
+		}
+	}
+
 
 	void SingleIterationForwardMapping(Camera cam, Texture2D inpaintTexture)
 	{

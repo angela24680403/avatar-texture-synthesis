@@ -56,7 +56,7 @@ public class Screenshot : MonoBehaviour
             renderResult.ReadPixels(rect, 0, 0);
 
             byte[] byteArray = renderResult.EncodeToPNG();
-            System.IO.File.WriteAllBytes(Application.dataPath + "/Textures/camera-view/" + myCamera.tag + ".png", byteArray);
+            System.IO.File.WriteAllBytes(Application.dataPath + "/Textures/camera-view/" + myCamera.tag + "1.png", byteArray);
             UnityEngine.Debug.Log("Saved " + myCamera.tag + ".png");
             RenderTexture.ReleaseTemporary(renderTexture);
             myCamera.targetTexture = null;
