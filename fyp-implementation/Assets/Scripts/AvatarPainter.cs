@@ -89,8 +89,11 @@ public class AvatarPainter : MonoBehaviour
                 {
                     Color col = texture.GetPixel(x ,y);
                     Debug.Log(col);
-                    Paint(hit, col, false);
-                    Paint(hit, Color.black, true);
+                    if(col != Color.black)
+                    {
+                        Paint(hit, col, false);
+                        Paint(hit, Color.black, true);
+                    }
 
                 }
             }
