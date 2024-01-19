@@ -12,7 +12,7 @@ public class AvatarPainter : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -46,31 +46,38 @@ public class AvatarPainter : MonoBehaviour
         {
             RotateMaskAvatar.RotateAvatar_Static();
         }
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            RotateModelAvatar.RotateAvatar_Static();
+        }
     }
 
     void Paint(RaycastHit hit, Color col, bool is_mask)
     {
         SkinnedMeshRenderer rend = hit.transform.GetComponent<SkinnedMeshRenderer>();
         MeshCollider meshCollider = hit.collider as MeshCollider;
+        // check material from hit.collider 
+        // see if it changes then discriminate
         Texture2D tex = mask;
         if (!(rend == null || meshCollider == null))
         {
-            if(is_mask != true)
+            if (is_mask != true)
             {
                 tex = rend.material.mainTexture as Texture2D;
             }
+
             Vector2 pixelUV = hit.textureCoord;
             pixelUV.x *= tex.width;
             pixelUV.y *= tex.height;
             tex.SetPixel((int)pixelUV.x, (int)pixelUV.y, col);
-            tex.SetPixel((int)pixelUV.x+1, (int)pixelUV.y, col);
-            tex.SetPixel((int)pixelUV.x-1, (int)pixelUV.y, col);
-            tex.SetPixel((int)pixelUV.x, (int)pixelUV.y+1, col);
-            tex.SetPixel((int)pixelUV.x, (int)pixelUV.y-1, col);
-            tex.SetPixel((int)pixelUV.x+1, (int)pixelUV.y+1, col);
-            tex.SetPixel((int)pixelUV.x+1, (int)pixelUV.y-1, col);
-            tex.SetPixel((int)pixelUV.x-1, (int)pixelUV.y-1, col);
-            tex.SetPixel((int)pixelUV.x-1, (int)pixelUV.y-1, col);
+            tex.SetPixel((int)pixelUV.x + 1, (int)pixelUV.y, col);
+            tex.SetPixel((int)pixelUV.x - 1, (int)pixelUV.y, col);
+            tex.SetPixel((int)pixelUV.x, (int)pixelUV.y + 1, col);
+            tex.SetPixel((int)pixelUV.x, (int)pixelUV.y - 1, col);
+            tex.SetPixel((int)pixelUV.x + 1, (int)pixelUV.y + 1, col);
+            tex.SetPixel((int)pixelUV.x + 1, (int)pixelUV.y - 1, col);
+            tex.SetPixel((int)pixelUV.x - 1, (int)pixelUV.y - 1, col);
+            tex.SetPixel((int)pixelUV.x - 1, (int)pixelUV.y - 1, col);
             tex.Apply();
         }
     }
@@ -78,7 +85,7 @@ public class AvatarPainter : MonoBehaviour
     void PaintFromPose()
     {
         Debug.Log("P pressed");
-        
+
         RaycastHit hit;
         for (int x = window[0]; x < window[2]; x++)
         {
@@ -87,10 +94,11 @@ public class AvatarPainter : MonoBehaviour
                 Vector3 pos = new Vector3((float)x, (float)y, 0.0f);
                 if (Physics.Raycast(cam.ScreenPointToRay(pos), out hit))
                 {
-                    Color col = texture.GetPixel(x ,y);
-                    Debug.Log(col);
-                    if(col != Color.black)
+                    Color col = texture.GetPixel(x, y);
+                    float threshold = 0.2f;
+                    if (col.r > threshold && col.g > threshold && col.b > threshold)
                     {
+                        Debug.Log(col);
                         Paint(hit, col, false);
                         Paint(hit, Color.black, true);
                     }
@@ -101,15 +109,15 @@ public class AvatarPainter : MonoBehaviour
         Debug.Log("done");
     }
 
-        void FindMinScreenWindow()
-        {
+    void FindMinScreenWindow()
+    {
         int min_x = 2000;
         int min_y = 2000;
         int max_x = 0;
         int max_y = 0;
         RaycastHit hit;
 
-        for (int x=0; x < Screen.width; x++)
+        for (int x = 0; x < Screen.width; x++)
         {
             for (int y = 0; y < Screen.height; y++)
             {
