@@ -27,7 +27,7 @@ public class ScreenshotModelAvatar : MonoBehaviour
             Rect rect = new Rect(0, 0, renderTexture.width, renderTexture.height);
             renderResult.ReadPixels(rect, 0, 0);
             byte[] byteArray = renderResult.EncodeToPNG();
-            System.IO.File.WriteAllBytes(Application.dataPath + "/Captured-Screenshots/Main/screenshot" + captureCount.ToString() + ".png", byteArray);
+            System.IO.File.WriteAllBytes(Application.dataPath + "/Captured-Screenshots/Model/screenshot" + captureCount.ToString() + ".png", byteArray);
             Debug.Log("Saved screenshot" + captureCount.ToString() + ".png");
             RenderTexture.ReleaseTemporary(renderTexture);
             myCamera.targetTexture = null;
