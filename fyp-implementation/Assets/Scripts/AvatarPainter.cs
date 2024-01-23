@@ -65,7 +65,7 @@ public class AvatarPainter : MonoBehaviour
             {
                 tex = rend.material.mainTexture as Texture2D;
             }
-
+            Debug.Log(col);
             Vector2 pixelUV = hit.textureCoord;
             pixelUV.x *= tex.width;
             pixelUV.y *= tex.height;
@@ -87,14 +87,15 @@ public class AvatarPainter : MonoBehaviour
         Debug.Log("P pressed");
 
         RaycastHit hit;
-        for (int x = window[0]; x < window[2]; x++)
+        for (int x = window[0]; x < window[0] + 250; x++)
         {
-            for (int y = window[1]; y < window[3]; y++)
+            for (int y = window[1]; y < window[1] + 250; y++)
             {
                 Vector3 pos = new Vector3((float)x, (float)y, 0.0f);
                 if (Physics.Raycast(cam.ScreenPointToRay(pos), out hit))
                 {
                     Color col = texture.GetPixel(x, y);
+                    col.a = 1.0f;
                     float threshold = 0.2f;
                     if (col.r > threshold && col.g > threshold && col.b > threshold)
                     {
@@ -134,9 +135,5 @@ public class AvatarPainter : MonoBehaviour
         }
         window = new int[] { min_x, min_y, max_x, max_y };
         Debug.Log("Window set");
-        Debug.Log(Screen.width);
-        Debug.Log(Screen.height);
-        Debug.Log(texture.width);
-        Debug.Log(texture.height);
     }
 }

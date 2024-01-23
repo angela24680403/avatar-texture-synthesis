@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657838, g: 0.49641228, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -747,8 +747,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 930281598}
-  texture: {fileID: 2800000, guid: 5cd28c63acce14e21a8fd552862c2bdc, type: 3}
-  mask: {fileID: 2800000, guid: 15c90129163ce44f0b7abc978df9187e, type: 3}
+  texture: {fileID: 2800000, guid: 187c385e9b7af46798276e30f816eec9, type: 3}
+  mask: {fileID: 2800000, guid: d85a6fdb6a77a4f56a4947ace29d78b4, type: 3}
 --- !u!4 &1076617303
 Transform:
   m_ObjectHideFlags: 0
