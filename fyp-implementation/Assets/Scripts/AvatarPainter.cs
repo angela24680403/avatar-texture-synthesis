@@ -5,17 +5,12 @@ using UnityEngine;
 public class AvatarPainter : MonoBehaviour
 {
     private int[] window = { 0, 0, 0, 0 };
+    private int count = 0;
     [SerializeField]
     public Camera cam;
     public Texture2D texture;
     public Texture2D mask;
-    // Start is called before the first frame update
-    void Start()
-    {
 
-    }
-
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.C))
@@ -37,6 +32,7 @@ public class AvatarPainter : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.P))
         {
             PaintFromPose();
+            SavePaintedTexture();
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
@@ -52,12 +48,33 @@ public class AvatarPainter : MonoBehaviour
         }
     }
 
+    void SavePaintedTexture()
+    {
+        // send a raycast to centre of screen to get main texture
+        // then save it.
+        RaycastHit hit;
+        Vector3 pos = new Vector3(256.0f, 256.0f, 0.0f);
+        if (Physics.Raycast(cam.ScreenPointToRay(pos), out hit))
+        {
+            SkinnedMeshRenderer rend = hit.transform.GetComponent<SkinnedMeshRenderer>();
+            Texture2D tex = rend.material.mainTexture as Texture2D;
+            Texture2D readable = DecompressTexture.Decompress_Static(tex);
+            byte[] byteArray = readable.EncodeToPNG();
+            System.IO.File.WriteAllBytes(Application.dataPath + "/Textures/Saved/Skin/texture" + count.ToString() + ".png", byteArray);
+            Debug.Log("Saved texture" + count.ToString() + ".png");
+        }
+        Texture2D readableMask = DecompressTexture.Decompress_Static(mask);
+        byte[] maskByteArray = readableMask.EncodeToPNG();
+        System.IO.File.WriteAllBytes(Application.dataPath + "/Textures/Saved/Mask/texture" + count.ToString() + ".png", maskByteArray);
+        Debug.Log("Saved texture" + count.ToString() + ".png");
+        count++;
+
+    }
+
     void Paint(RaycastHit hit, Color col, bool is_mask)
     {
         SkinnedMeshRenderer rend = hit.transform.GetComponent<SkinnedMeshRenderer>();
         MeshCollider meshCollider = hit.collider as MeshCollider;
-        // check material from hit.collider 
-        // see if it changes then discriminate
         Texture2D tex = mask;
         if (!(rend == null || meshCollider == null))
         {
@@ -65,7 +82,6 @@ public class AvatarPainter : MonoBehaviour
             {
                 tex = rend.material.mainTexture as Texture2D;
             }
-            Debug.Log(col);
             Vector2 pixelUV = hit.textureCoord;
             pixelUV.x *= tex.width;
             pixelUV.y *= tex.height;
@@ -87,9 +103,9 @@ public class AvatarPainter : MonoBehaviour
         Debug.Log("P pressed");
 
         RaycastHit hit;
-        for (int x = window[0]; x < window[0] + 250; x++)
+        for (int x = window[0]; x < window[2]; x++)
         {
-            for (int y = window[1]; y < window[1] + 250; y++)
+            for (int y = window[1]; y < window[3]; y++)
             {
                 Vector3 pos = new Vector3((float)x, (float)y, 0.0f);
                 if (Physics.Raycast(cam.ScreenPointToRay(pos), out hit))
