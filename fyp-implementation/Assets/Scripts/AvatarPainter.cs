@@ -7,7 +7,9 @@ public class AvatarPainter : MonoBehaviour
     private int[] window = { 0, 0, 0, 0 };
     private int count = 0;
     [SerializeField]
-    public Camera cam;
+    public Camera mainCam;
+    public Camera modelCam;
+    public Camera maskCam;
     public Texture2D texture;
     public Texture2D mask;
 
@@ -15,15 +17,15 @@ public class AvatarPainter : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.C))
         {
-            ScreenshotMainAvatar.CaptureScreenshot_Static();
+            Screenshot.Screenshot_Static(mainCam);
         }
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            ScreenshotMaskAvatar.CaptureScreenshot_Static();
+            Screenshot.Screenshot_Static(maskCam);
         }
         if (Input.GetKeyDown(KeyCode.A))
         {
-            ScreenshotModelAvatar.CaptureScreenshot_Static();
+            Screenshot.Screenshot_Static(modelCam);
         }
         if (Input.GetKeyDown(KeyCode.W))
         {
@@ -54,7 +56,7 @@ public class AvatarPainter : MonoBehaviour
         // then save it.
         RaycastHit hit;
         Vector3 pos = new Vector3(256.0f, 256.0f, 0.0f);
-        if (Physics.Raycast(cam.ScreenPointToRay(pos), out hit))
+        if (Physics.Raycast(mainCam.ScreenPointToRay(pos), out hit))
         {
             SkinnedMeshRenderer rend = hit.transform.GetComponent<SkinnedMeshRenderer>();
             Texture2D tex = rend.material.mainTexture as Texture2D;
@@ -108,7 +110,7 @@ public class AvatarPainter : MonoBehaviour
             for (int y = window[1]; y < window[3]; y++)
             {
                 Vector3 pos = new Vector3((float)x, (float)y, 0.0f);
-                if (Physics.Raycast(cam.ScreenPointToRay(pos), out hit))
+                if (Physics.Raycast(mainCam.ScreenPointToRay(pos), out hit))
                 {
                     Color col = texture.GetPixel(x, y);
                     col.a = 1.0f;
@@ -139,7 +141,7 @@ public class AvatarPainter : MonoBehaviour
             for (int y = 0; y < Screen.height; y++)
             {
                 Vector3 pos = new Vector3((float)x, (float)y, 0.0f);
-                if (Physics.Raycast(cam.ScreenPointToRay(pos), out hit))
+                if (Physics.Raycast(mainCam.ScreenPointToRay(pos), out hit))
                 {
                     if (pos.x < min_x) { min_x = x; }
                     if (pos.y < min_y) { min_y = y; }
