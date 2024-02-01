@@ -15,12 +15,12 @@ public class InpaintResponse
 public class ControlNetAPI : MonoBehaviour
 {
     private readonly string sdWebUIApiEndpoint = "http://128.16.14.135:7860/";
-    private readonly string prompt = "cat";
     private int count = 0;
 
     [SerializeField]
     public Texture2D mask;
     public Texture2D image;
+    public string prompt = "";
 
 
     void Start()
@@ -62,6 +62,14 @@ public class ControlNetAPI : MonoBehaviour
                             model = "control_v11p_sd15_inpaint [ebff9138]",
                             module = "inpaint_only",
                             mask = maskB64,
+                            weight = 1.0,
+                            control_mode = 0
+                        }, new
+                        {   enabled = true,
+                            input_image = imgB64,
+                            model = "control_v11f1p_sd15_depth [cfd03158]",
+                            module = "depth_midas",
+                            mask = "",
                             weight = 1.0,
                             control_mode = 0
                         }

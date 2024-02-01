@@ -26,6 +26,7 @@ public class ScreenshotMainAvatar : MonoBehaviour
             Texture2D renderResult = new Texture2D(renderTexture.width, renderTexture.height, TextureFormat.ARGB32, false);
             Rect rect = new Rect(0, 0, renderTexture.width, renderTexture.height);
             renderResult.ReadPixels(rect, 0, 0);
+
             byte[] byteArray = renderResult.EncodeToPNG();
             System.IO.File.WriteAllBytes(Application.dataPath + "/Captured-Screenshots/Main/screenshot" + captureCount.ToString() + ".png", byteArray);
             Debug.Log("Saved screenshot" + captureCount.ToString() + ".png");
@@ -35,6 +36,14 @@ public class ScreenshotMainAvatar : MonoBehaviour
         }
 
     }
+
+    // private void MakeAlphaChannelOne(Texture2D texture) {
+    //     for (int i = 0; i < texture.width; i++) {
+    //         for (int j=0; j <texture.height; j++) {
+
+    //         }
+    //     }
+    // }
 
     private void CaptureScreenshot()
     {

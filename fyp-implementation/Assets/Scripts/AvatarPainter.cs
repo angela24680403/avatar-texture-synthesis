@@ -112,8 +112,8 @@ public class AvatarPainter : MonoBehaviour
                 {
                     Color col = texture.GetPixel(x, y);
                     col.a = 1.0f;
-                    float threshold = 0.2f;
-                    if (col.r > threshold && col.g > threshold && col.b > threshold)
+                    bool is_green = col.g > col.r && col.g > col.b;
+                    if (!is_green)
                     {
                         Debug.Log(col);
                         Paint(hit, col, false);
