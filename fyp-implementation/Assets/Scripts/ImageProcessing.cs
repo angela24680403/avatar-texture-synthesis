@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class ImageProcessing : MonoBehaviour
 {
-    private int count = 0;
     [SerializeField]
     public Texture2D mask;
     public int kernelSize;
@@ -33,8 +32,8 @@ public class ImageProcessing : MonoBehaviour
         newImage.Apply();
         Texture2D decompressedTexture = DecompressTexture.Decompress_Static(newImage);
         byte[] byteArray = decompressedTexture.EncodeToPNG();
-        System.IO.File.WriteAllBytes(Application.dataPath + "/newImage" + count.ToString() + ".png", byteArray);
-        Debug.Log("Saved background removed image " + count.ToString() + ".png");
+        System.IO.File.WriteAllBytes(Application.dataPath + "/Screenshots/RemovedBg.png", byteArray);
+        Debug.Log("Saved background removed image RemovedBg.png");
     }
 
     void DilateMask(Texture2D mask, int kernelSize)
@@ -59,8 +58,8 @@ public class ImageProcessing : MonoBehaviour
         dilatedMask.Apply();
         Texture2D decompressedTexture = DecompressTexture.Decompress_Static(dilatedMask);
         byte[] byteArray = decompressedTexture.EncodeToPNG();
-        System.IO.File.WriteAllBytes(Application.dataPath + "/Captured-Screenshots/Mask/dilated" + count.ToString() + ".png", byteArray);
-        Debug.Log("Saved dilated mask" + count.ToString() + ".png");
+        System.IO.File.WriteAllBytes(Application.dataPath + "/Screenshots/Dilated.png", byteArray);
+        Debug.Log("Saved Dilated.png");
     }
 
     bool UpdatePixelValue(int xCoord, int yCoord, Texture2D mask, int kernelSize)

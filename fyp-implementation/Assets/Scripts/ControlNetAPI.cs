@@ -14,33 +14,28 @@ public class InpaintResponse
 
 public class ControlNetAPI : MonoBehaviour
 {
+    private static ControlNetAPI instance;
     private readonly string sdWebUIApiEndpoint = "http://128.16.14.135:7860/";
-    private int count = 0;
 
-    [SerializeField]
-    public Texture2D mask;
-    public Texture2D image;
-    public string prompt = "";
-
-
-    void Start()
+    private void Awake()
     {
-
-        Debug.Log("Start");
-
+        instance = this;
+    }
+    public static void GetControlNetResult_Static(Texture2D mask, Texture2D image, string prompt)
+    {
+        instance.GetControlNetResult(mask, image, prompt);
+    }
+    private void GetControlNetResult(Texture2D mask, Texture2D image, string prompt)
+    {
         // Open and convert the mask image to base64 string
-
         string maskB64 = TextureToBase64(DecompressTexture.Decompress_Static(mask));
-
         // Open and convert the target image to base64 string
         string imgB64 = TextureToBase64(DecompressTexture.Decompress_Static(image));
-
         string apiUrl = new Uri(new Uri(sdWebUIApiEndpoint), "/sdapi/v1/txt2img").ToString();
-        StartCoroutine(SendRequest(apiUrl, imgB64, maskB64));
-
+        StartCoroutine(SendRequest(apiUrl, imgB64, maskB64, prompt));
     }
 
-    IEnumerator SendRequest(string apiUrl, string imgB64, string maskB64)
+    IEnumerator SendRequest(string apiUrl, string imgB64, string maskB64, string prompt)
     {
         var inpaintArgs = new
         {
@@ -71,16 +66,13 @@ public class ControlNetAPI : MonoBehaviour
                             module = "depth_midas",
                             mask = "",
                             weight = 1.0,
-                            control_mode = 0
+                            control_mode = 1
                         }
                     }
                 }
             }
         };
-
-        Debug.Log("Going to send request...");
         Debug.Log(apiUrl);
-
 
         // Make a POST request to the API with the inpainting arguments
         using (UnityWebRequest request = new UnityWebRequest(apiUrl, "POST"))
@@ -108,9 +100,8 @@ public class ControlNetAPI : MonoBehaviour
                 outputTexture.LoadImage(imageBytes);
                 Texture2D decompressedTexture = DecompressTexture.Decompress_Static(outputTexture);
                 byte[] byteArray = outputTexture.EncodeToPNG();
-                System.IO.File.WriteAllBytes(Application.dataPath + "/Textures/Inpainted/texture" + count.ToString() + ".png", byteArray);
-                Debug.Log("Saved inpaint output" + count.ToString() + ".png");
-                count++;
+                System.IO.File.WriteAllBytes(Application.dataPath + "/Screenshots/Inpainted.png", byteArray);
+                Debug.Log("Saved Inpainted.png");
             }
             else
             {

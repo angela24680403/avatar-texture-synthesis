@@ -339,8 +339,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d0d66d2458934e81acdd9ec9cdc8a11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mask: {fileID: 2800000, guid: cdce8f2d3201c1746a18764212168735, type: 3}
-  kernelSize: 15
+  mask: {fileID: 2800000, guid: 6a33528e6f3394b1c927fe7b545f5339, type: 3}
+  kernelSize: 7
   image: {fileID: 2800000, guid: 074a3eb85244c45a19dbf68cb1cb23dc, type: 3}
 --- !u!4 &1365342384
 Transform:

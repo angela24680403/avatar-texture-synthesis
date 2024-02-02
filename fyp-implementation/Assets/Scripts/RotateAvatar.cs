@@ -12,38 +12,42 @@ public class RotateAvatar : MonoBehaviour
     }
 
 
-    IEnumerator RotateCoroutine()
+    IEnumerator RotateCoroutine(GameObject avatar, float angle)
     {
         if (!isRotating)
         {
             isRotating = true;
 
-            float targetAngle = transform.rotation.eulerAngles.y + 45f;
+            float targetAngle = avatar.transform.rotation.eulerAngles.y + angle;
             Debug.Log(targetAngle);
 
-            while (transform.rotation.eulerAngles.y < targetAngle)
+            if (targetAngle == 360f)
+            {
+                targetAngle = targetAngle - 360f;
+            }
+            while (avatar.transform.rotation.eulerAngles.y < targetAngle)
             {
                 // Adjust the rotation speed as needed
                 float rotationSpeed = 90f; // 90 degrees per second
                 float rotationAmount = rotationSpeed * Time.deltaTime;
 
-                transform.Rotate(new Vector3(0,1,0), rotationAmount);
+                avatar.transform.Rotate(new Vector3(0, 1, 0), rotationAmount);
                 yield return null;
             }
 
             // Snap the rotation to exactly 45 degrees
-            transform.rotation = Quaternion.Euler(0f, targetAngle, 0f);
+            avatar.transform.rotation = Quaternion.Euler(0f, targetAngle, 0f);
 
             isRotating = false;
         }
     }
-    void Rotate()
+    void Rotate(GameObject avatar, float angle)
     {
-        StartCoroutine(RotateCoroutine());
+        StartCoroutine(RotateCoroutine(avatar, angle));
     }
 
-    public static void RotateAvatar_Static()
+    public static void RotateAvatar_Static(GameObject avatar, float angle)
     {
-        instance.Rotate();
+        instance.Rotate(avatar, angle);
     }
 }

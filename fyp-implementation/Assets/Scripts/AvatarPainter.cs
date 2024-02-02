@@ -4,17 +4,33 @@ using UnityEngine;
 
 public class AvatarPainter : MonoBehaviour
 {
+    private bool controlnet_running = false;
     private int[] window = { 0, 0, 0, 0 };
     private int count = 0;
     [SerializeField]
+    public GameObject mainAvatar;
+    public GameObject modelAvatar;
+    public GameObject maskAvatar;
     public Camera mainCam;
     public Camera modelCam;
     public Camera maskCam;
-    public Texture2D texture;
+    public Texture2D mainScreenshot;
+    public Texture2D maskScreenshot;
+    public Texture2D modelScreenshot;
+    public Texture2D inpaintedImage;
     public Texture2D mask;
+    public string prompt = "";
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            Pipeline1();
+        }
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            Pipeline2();
+        }
         if (Input.GetKeyDown(KeyCode.C))
         {
             Screenshot.Screenshot_Static(mainCam);
@@ -33,22 +49,44 @@ public class AvatarPainter : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.P))
         {
-            PaintFromPose();
-            SavePaintedTexture();
+            PaintFromPose(modelScreenshot);
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
-            RotateAvatar.RotateAvatar_Static();
+            RotateAvatar.RotateAvatar_Static(mainAvatar, 45f);
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
-            RotateMaskAvatar.RotateAvatar_Static();
+            RotateAvatar.RotateAvatar_Static(maskAvatar, 45f);
         }
         if (Input.GetKeyDown(KeyCode.M))
         {
-            RotateModelAvatar.RotateAvatar_Static();
+            RotateAvatar.RotateAvatar_Static(modelAvatar, 45f);
         }
     }
+
+    void Pipeline1()
+    {
+        // fill front
+        Screenshot.Screenshot_Static(modelCam);
+        Screenshot.Screenshot_Static(maskCam);
+        ControlNetAPI.GetControlNetResult_Static(maskScreenshot, modelScreenshot, prompt);
+        // inpaintedImage now has the correct image to project
+    }
+
+    void Pipeline2()
+    {
+        FindMinScreenWindow();
+        PaintFromPose(inpaintedImage);
+        // fill back
+        RotateAvatar.RotateAvatar_Static(modelAvatar, 180f);
+        RotateAvatar.RotateAvatar_Static(maskAvatar, 180f);
+        RotateAvatar.RotateAvatar_Static(mainAvatar, 180f);
+        Screenshot.Screenshot_Static(modelCam);
+        Screenshot.Screenshot_Static(maskCam);
+        ControlNetAPI.GetControlNetResult_Static(maskScreenshot, modelScreenshot, prompt);
+    }
+
 
     void SavePaintedTexture()
     {
@@ -62,13 +100,13 @@ public class AvatarPainter : MonoBehaviour
             Texture2D tex = rend.material.mainTexture as Texture2D;
             Texture2D readable = DecompressTexture.Decompress_Static(tex);
             byte[] byteArray = readable.EncodeToPNG();
-            System.IO.File.WriteAllBytes(Application.dataPath + "/Textures/Saved/Skin/texture" + count.ToString() + ".png", byteArray);
-            Debug.Log("Saved texture" + count.ToString() + ".png");
+            System.IO.File.WriteAllBytes(Application.dataPath + "/Textures/Saved/Skin.png", byteArray);
+            Debug.Log("Saved texture Skin.png");
         }
         Texture2D readableMask = DecompressTexture.Decompress_Static(mask);
         byte[] maskByteArray = readableMask.EncodeToPNG();
-        System.IO.File.WriteAllBytes(Application.dataPath + "/Textures/Saved/Mask/texture" + count.ToString() + ".png", maskByteArray);
-        Debug.Log("Saved texture" + count.ToString() + ".png");
+        System.IO.File.WriteAllBytes(Application.dataPath + "/Textures/Saved/Mask.png", maskByteArray);
+        Debug.Log("Saved texture Mask.png");
         count++;
 
     }
@@ -98,9 +136,10 @@ public class AvatarPainter : MonoBehaviour
             tex.SetPixel((int)pixelUV.x - 1, (int)pixelUV.y - 1, col);
             tex.Apply();
         }
+        SavePaintedTexture();
     }
 
-    void PaintFromPose()
+    void PaintFromPose(Texture2D texture)
     {
         Debug.Log("P pressed");
 
