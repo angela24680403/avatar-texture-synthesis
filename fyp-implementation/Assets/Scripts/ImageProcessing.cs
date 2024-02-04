@@ -4,17 +4,19 @@ using UnityEngine;
 
 public class ImageProcessing : MonoBehaviour
 {
-    [SerializeField]
-    public Texture2D mask;
-    public int kernelSize;
-    public Texture2D image;
+    private static ImageProcessing instance;
 
-    void Start()
+    private void Awake()
     {
-        DilateMask(mask, kernelSize);
+        instance = this;
     }
 
-    void RemoveBg()
+    public static void DilateMask_Static(Texture2D mask, int kernalSize)
+    {
+        instance.DilateMask(mask, kernalSize);
+
+    }
+    void RemoveBg(Texture2D image)
     {
         Texture2D newImage = new Texture2D(image.width, image.height);
         for (int x = 0; x < image.width; x++)
@@ -58,7 +60,7 @@ public class ImageProcessing : MonoBehaviour
         dilatedMask.Apply();
         Texture2D decompressedTexture = DecompressTexture.Decompress_Static(dilatedMask);
         byte[] byteArray = decompressedTexture.EncodeToPNG();
-        System.IO.File.WriteAllBytes(Application.dataPath + "/Screenshots/Dilated.png", byteArray);
+        System.IO.File.WriteAllBytes(Application.dataPath + "/Screenshots/Mask.png", byteArray);
         Debug.Log("Saved Dilated.png");
     }
 

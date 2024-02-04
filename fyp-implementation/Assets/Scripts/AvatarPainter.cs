@@ -5,6 +5,7 @@ using UnityEngine;
 public class AvatarPainter : MonoBehaviour
 {
     private bool controlnet_running = false;
+    private int KERNELSIZE = 7;
     private int[] window = { 0, 0, 0, 0 };
     private int count = 0;
     [SerializeField]
@@ -14,10 +15,12 @@ public class AvatarPainter : MonoBehaviour
     public Camera mainCam;
     public Camera modelCam;
     public Camera maskCam;
+    public Camera depthCam;
     public Texture2D mainScreenshot;
     public Texture2D maskScreenshot;
     public Texture2D modelScreenshot;
     public Texture2D inpaintedImage;
+    public Texture2D depthImage;
     public Texture2D mask;
     public string prompt = "";
 
@@ -27,9 +30,17 @@ public class AvatarPainter : MonoBehaviour
         {
             Pipeline1();
         }
-        if (Input.GetKeyDown(KeyCode.U))
+        if (Input.GetKeyDown(KeyCode.Y))
         {
             Pipeline2();
+        }
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            Pipeline3();
+        }
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            Pipeline4();
         }
         if (Input.GetKeyDown(KeyCode.C))
         {
@@ -63,6 +74,10 @@ public class AvatarPainter : MonoBehaviour
         {
             RotateAvatar.RotateAvatar_Static(modelAvatar, 45f);
         }
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            Screenshot.Screenshot_Static(depthCam);
+        }
     }
 
     void Pipeline1()
@@ -70,7 +85,8 @@ public class AvatarPainter : MonoBehaviour
         // fill front
         Screenshot.Screenshot_Static(modelCam);
         Screenshot.Screenshot_Static(maskCam);
-        ControlNetAPI.GetControlNetResult_Static(maskScreenshot, modelScreenshot, prompt);
+        Screenshot.Screenshot_Static(depthCam);
+        ControlNetAPI.GetControlNetResult_Static(maskScreenshot, modelScreenshot, depthImage, prompt);
         // inpaintedImage now has the correct image to project
     }
 
@@ -78,13 +94,32 @@ public class AvatarPainter : MonoBehaviour
     {
         FindMinScreenWindow();
         PaintFromPose(inpaintedImage);
-        // fill back
+        // Get back inpaint
         RotateAvatar.RotateAvatar_Static(modelAvatar, 180f);
         RotateAvatar.RotateAvatar_Static(maskAvatar, 180f);
         RotateAvatar.RotateAvatar_Static(mainAvatar, 180f);
         Screenshot.Screenshot_Static(modelCam);
         Screenshot.Screenshot_Static(maskCam);
-        ControlNetAPI.GetControlNetResult_Static(maskScreenshot, modelScreenshot, prompt);
+        //ControlNetAPI.GetControlNetResult_Static(maskScreenshot, modelScreenshot, depthImage, prompt);
+    }
+
+    void Pipeline3()
+    {
+        // fill back
+        FindMinScreenWindow();
+        PaintFromPose(inpaintedImage);
+        RotateAvatar.RotateAvatar_Static(maskAvatar, 225f);
+        RotateAvatar.RotateAvatar_Static(mainAvatar, 225f);
+        Screenshot.Screenshot_Static(mainCam);
+        Screenshot.Screenshot_Static(maskCam);
+        ImageProcessing.DilateMask_Static(maskScreenshot, KERNELSIZE);
+        //ControlNetAPI.GetControlNetResult_Static(maskScreenshot, mainScreenshot, depthImage, prompt);
+    }
+
+    void Pipeline4()
+    {
+        FindMinScreenWindow();
+        PaintFromPose(inpaintedImage);
     }
 
 
