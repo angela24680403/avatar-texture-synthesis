@@ -58,11 +58,11 @@ public class ControlNetAPI : MonoBehaviour
     {
         instance = this;
     }
-    public static void GetControlNetResult_Static(Texture2D mask, Texture2D image, Texture2D depth, string prompt)
+    public static void GetControlNetResult_Static(Texture2D mask, Texture2D image, Texture2D depth, string prompt, string neg_prompt)
     {
-        instance.GetControlNetResult(mask, image, depth, prompt);
+        instance.GetControlNetResult(mask, image, depth, prompt, neg_prompt);
     }
-    private void GetControlNetResult(Texture2D mask, Texture2D image, Texture2D depth, string prompt)
+    private void GetControlNetResult(Texture2D mask, Texture2D image, Texture2D depth, string prompt, string neg_prompt)
     {
         // Open and convert the mask image to base64 string
         string maskB64 = TextureToBase64(DecompressTexture.Decompress_Static(mask));
@@ -70,14 +70,17 @@ public class ControlNetAPI : MonoBehaviour
         string imgB64 = TextureToBase64(DecompressTexture.Decompress_Static(image));
         string depthB64 = TextureToBase64(DecompressTexture.Decompress_Static(depth));
         string apiUrl = new Uri(new Uri(sdWebUIApiEndpoint), img2img).ToString();
-        StartCoroutine(SendRequest(apiUrl, imgB64, maskB64, depthB64, prompt));
+        StartCoroutine(SendRequest(apiUrl, imgB64, maskB64, depthB64, prompt, neg_prompt));
     }
 
-    IEnumerator SendRequest(string apiUrl, string imgB64, string maskB64, string depthB64, string prompt)
+    IEnumerator SendRequest(string apiUrl, string imgB64, string maskB64, string depthB64, string prompt, string neg_prompt)
     {
         var img2imgInpaintArgs = new
         {
             prompt = prompt,
+            negative_prompt = neg_prompt,
+            width = 512,
+            height = 512,
             denoising_strength = 0.75,
             init_images = new List<string> { imgB64 },
             mask = depthB64
@@ -109,7 +112,7 @@ public class ControlNetAPI : MonoBehaviour
                 byte[] imageBytes = Convert.FromBase64String(imageB64);
                 Texture2D outputTexture = new Texture2D(2, 2);
                 outputTexture.LoadImage(imageBytes);
-                Texture2D decompressedTexture = DecompressTexture.Decompress_Static(outputTexture);
+                outputTexture = ImageProcessing.Resize(outputTexture, 512, 512 );
                 byte[] byteArray = outputTexture.EncodeToPNG();
                 System.IO.File.WriteAllBytes(Application.dataPath + "/Screenshots/Inpainted.png", byteArray);
                 Debug.Log("Saved Inpainted.png");
@@ -122,7 +125,6 @@ public class ControlNetAPI : MonoBehaviour
         }
 
     }
-
     private string TextureToBase64(Texture2D texture)
     {
         byte[] imageBytes = texture.EncodeToPNG();

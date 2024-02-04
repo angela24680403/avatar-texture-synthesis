@@ -23,12 +23,14 @@ public class AvatarPainter : MonoBehaviour
     public Texture2D depthImage;
     public Texture2D mask;
     public string prompt = "";
+    public string neg_prompt = "";
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.T))
         {
-            Pipeline1();
+            ImageProcessing.Resize(mainScreenshot, 512,512);
+            ControlNetAPI.GetControlNetResult_Static(maskScreenshot, mainScreenshot, depthImage, prompt, neg_prompt);
         }
         if (Input.GetKeyDown(KeyCode.Y))
         {
@@ -60,7 +62,7 @@ public class AvatarPainter : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.P))
         {
-            PaintFromPose(modelScreenshot);
+            PaintFromPose(inpaintedImage);
         }
         if (Input.GetKeyDown(KeyCode.R))
         {
@@ -78,6 +80,11 @@ public class AvatarPainter : MonoBehaviour
         {
             Screenshot.Screenshot_Static(depthCam);
         }
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            Debug.Log("Dilating mask.");
+            ImageProcessing.DilateMask_Static(maskScreenshot, KERNELSIZE);
+        }
     }
 
     void Pipeline1()
@@ -86,7 +93,7 @@ public class AvatarPainter : MonoBehaviour
         Screenshot.Screenshot_Static(modelCam);
         Screenshot.Screenshot_Static(maskCam);
         Screenshot.Screenshot_Static(depthCam);
-        ControlNetAPI.GetControlNetResult_Static(maskScreenshot, modelScreenshot, depthImage, prompt);
+        ControlNetAPI.GetControlNetResult_Static(maskScreenshot, modelScreenshot, depthImage, prompt, neg_prompt);
         // inpaintedImage now has the correct image to project
     }
 
@@ -126,9 +133,9 @@ public class AvatarPainter : MonoBehaviour
     void SavePaintedTexture()
     {
         // send a raycast to centre of screen to get main texture
-        // then save it.
+        // then save it. 
         RaycastHit hit;
-        Vector3 pos = new Vector3(256.0f, 256.0f, 0.0f);
+        Vector3 pos = new Vector3(512.0f, 512.0f, 0.0f);
         if (Physics.Raycast(mainCam.ScreenPointToRay(pos), out hit))
         {
             SkinnedMeshRenderer rend = hit.transform.GetComponent<SkinnedMeshRenderer>();
@@ -171,7 +178,7 @@ public class AvatarPainter : MonoBehaviour
             tex.SetPixel((int)pixelUV.x - 1, (int)pixelUV.y - 1, col);
             tex.Apply();
         }
-        SavePaintedTexture();
+        
     }
 
     void PaintFromPose(Texture2D texture)
@@ -189,6 +196,7 @@ public class AvatarPainter : MonoBehaviour
                     Color col = texture.GetPixel(x, y);
                     col.a = 1.0f;
                     bool is_green = col.g > col.r && col.g > col.b;
+                    //bool is_green = col.g > 180f && col.r < 70 && col.b < 70;
                     if (!is_green)
                     {
                         Debug.Log(col);
@@ -200,6 +208,7 @@ public class AvatarPainter : MonoBehaviour
             }
         }
         Debug.Log("done");
+        SavePaintedTexture();
     }
 
     void FindMinScreenWindow()

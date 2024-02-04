@@ -16,6 +16,18 @@ public class ImageProcessing : MonoBehaviour
         instance.DilateMask(mask, kernalSize);
 
     }
+
+    public static Texture2D Resize(Texture2D texture2D, int new_w, int new_h)
+    {
+        RenderTexture rt = new RenderTexture(new_w, new_h, 24);
+        RenderTexture.active = rt;
+        Graphics.Blit(texture2D, rt);
+        Texture2D result = new Texture2D(new_w, new_h);
+        result.ReadPixels(new Rect(0, 0, new_w, new_h), 0, 0);
+        result.Apply();
+        return result;
+    }
+
     void RemoveBg(Texture2D image)
     {
         Texture2D newImage = new Texture2D(image.width, image.height);
