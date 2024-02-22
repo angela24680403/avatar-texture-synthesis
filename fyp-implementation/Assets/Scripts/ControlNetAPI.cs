@@ -75,7 +75,35 @@ public class ControlNetAPI : MonoBehaviour
 
     IEnumerator SendRequest(string apiUrl, string imgB64, string maskB64, string depthB64, string prompt, string neg_prompt)
     {
-        var img2imgInpaintArgs = new
+        // var img2imgInpaintArgs2 = new
+        // {
+        //     prompt = prompt,
+        //     negative_prompt = neg_prompt,
+        //     width = 512,
+        //     height = 512,
+        //     denoising_strength = 0.75,
+        //     init_images = new List<string> { imgB64 },
+        //     //mask_content = 3,
+        //     mask = maskB64,
+        //     alwayson_scripts = new
+        //     {
+        //         controlnet = new
+        //         {
+        //             args = new[]
+        //             {
+        //                 new
+        //                 {   enabled = true,
+        //                     input_image = depthB64,
+        //                     model = "control_v11f1p_sd15_depth [cfd03158]",
+        //                     module = "none",
+        //                     weight = 1.0,
+        //                     control_mode = 0
+        //                 }
+        //             }
+        //         }
+        //     }
+        // };
+        var img2imgInpaintArgs1 = new
         {
             prompt = prompt,
             negative_prompt = neg_prompt,
@@ -86,12 +114,40 @@ public class ControlNetAPI : MonoBehaviour
             mask = depthB64
         };
 
+        // var txt2imgInpaintArgs = new
+        // {
+        //     prompt = prompt,
+        //     batch_size = 1,
+        //     denoising_strength = 1.0,
+        //     steps = 30,
+        //     sampler = "DPM++ 2S a Karras",
+        //     alwayson_scripts = new
+        //     {
+        //         controlnet = new
+        //         {
+        //             args = new[]
+        //             {
+        //                 new
+        //                 {
+        //                     enabled = true,
+        //                     input_image = imgB64,
+        //                     model = "control_v11p_sd15_inpaint [ebff9138]",
+        //                     module = "inpaint_only",
+        //                     mask = maskB64,
+        //                     weight = 1.0,
+        //                     control_mode = 0
+        //                 }
+        //             }
+        //         }
+        //     }
+        // };
+
         Debug.Log(apiUrl);
 
         // Make a POST request to the API with the inpainting arguments
         using (UnityWebRequest request = new UnityWebRequest(apiUrl, "POST"))
         {
-            request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(img2imgInpaintArgs)));
+            request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(img2imgInpaintArgs1)));
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
 
@@ -112,7 +168,7 @@ public class ControlNetAPI : MonoBehaviour
                 byte[] imageBytes = Convert.FromBase64String(imageB64);
                 Texture2D outputTexture = new Texture2D(2, 2);
                 outputTexture.LoadImage(imageBytes);
-                outputTexture = ImageProcessing.Resize(outputTexture, 512, 512 );
+                outputTexture = ImageProcessing.Resize(outputTexture, 512, 512);
                 byte[] byteArray = outputTexture.EncodeToPNG();
                 System.IO.File.WriteAllBytes(Application.dataPath + "/Screenshots/Inpainted.png", byteArray);
                 Debug.Log("Saved Inpainted.png");

@@ -14,6 +14,7 @@ public class Screenshot : MonoBehaviour
 
     private void CaptureScreenshot(Camera cam)
     {
+        RenderTexture original = cam.targetTexture;
         cam.targetTexture = renderTexture;
         cam.Render();
         RenderTexture.active = renderTexture;
@@ -23,7 +24,7 @@ public class Screenshot : MonoBehaviour
         byte[] byteArray = tex.EncodeToPNG();
         System.IO.File.WriteAllBytes(Application.dataPath + "/Screenshots/" + cam.tag + ".png", byteArray);
         Debug.Log("Saved screenshot " + cam.tag + ".png");
-        cam.targetTexture = null;
+        cam.targetTexture = original;
     }
 
     public static void Screenshot_Static(Camera cam)

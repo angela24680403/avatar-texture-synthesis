@@ -5,18 +5,11 @@ using UnityEngine;
 public class DepthRenderer : MonoBehaviour
 {
     public Camera cam;
+    [ExecuteInEditMode]
     public Material mat;
     void Start()
     {
-        if (cam == null)
-        {
-            cam = this.GetComponent<Camera>();
-            cam.depthTextureMode = DepthTextureMode.DepthNormals;
-        }
-        if (mat == null)
-        {
-            mat = new Material(Shader.Find("Hidden/DepthShader"));
-        }
+        cam.depthTextureMode = DepthTextureMode.DepthNormals;
     }
 
 

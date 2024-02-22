@@ -11,6 +11,7 @@ public class ImageProcessing : MonoBehaviour
         instance = this;
     }
 
+
     public static void DilateMask_Static(Texture2D mask, int kernalSize)
     {
         instance.DilateMask(mask, kernalSize);
@@ -28,7 +29,7 @@ public class ImageProcessing : MonoBehaviour
         return result;
     }
 
-    void RemoveBg(Texture2D image)
+    void RemoveBlackPixels(Texture2D image)
     {
         Texture2D newImage = new Texture2D(image.width, image.height);
         for (int x = 0; x < image.width; x++)
@@ -36,17 +37,16 @@ public class ImageProcessing : MonoBehaviour
             for (int y = 0; y < image.height; y++)
             {
                 Color col = image.GetPixel(x, y);
-                float threshold = 0.1f;
-                if (col.r > threshold && col.g > threshold && col.b > threshold)
+                bool is_black = col.g < 0.25f && col.b < 0.25f && col.r < 0.25f;
+                if (!is_black)
                 {
                     newImage.SetPixel(x, y, col);
                 }
             }
         }
         newImage.Apply();
-        Texture2D decompressedTexture = DecompressTexture.Decompress_Static(newImage);
-        byte[] byteArray = decompressedTexture.EncodeToPNG();
-        System.IO.File.WriteAllBytes(Application.dataPath + "/Screenshots/RemovedBg.png", byteArray);
+        byte[] byteArray = newImage.EncodeToPNG();
+        System.IO.File.WriteAllBytes(Application.dataPath + "/Textures/Saved/RemoveBlackPixels.png", byteArray);
         Debug.Log("Saved background removed image RemovedBg.png");
     }
 
@@ -55,13 +55,21 @@ public class ImageProcessing : MonoBehaviour
         Texture2D dilatedMask = new Texture2D(mask.width, mask.height);
         int padding = kernelSize / 2;
 
-        for (int x = padding; x < mask.width - padding; x++)
+
+        for (int x = 0; x < mask.width; x++)
         {
-            for (int y = padding; y < mask.height - padding; y++)
+            for (int y = 0; y < mask.height; y++)
             {
-                if (UpdatePixelValue(x, y, mask, kernelSize))
+                if (x > padding && x < mask.width - padding && y > padding && y < mask.height - padding)
                 {
-                    dilatedMask.SetPixel(x, y, Color.white);
+                    if (UpdatePixelValue(x, y, mask, kernelSize))
+                    {
+                        dilatedMask.SetPixel(x, y, Color.white);
+                    }
+                    else
+                    {
+                        dilatedMask.SetPixel(x, y, Color.black);
+                    }
                 }
                 else
                 {
@@ -78,7 +86,7 @@ public class ImageProcessing : MonoBehaviour
 
     bool UpdatePixelValue(int xCoord, int yCoord, Texture2D mask, int kernelSize)
     {
-        bool has_white = false;
+         bool has_white = false;
         for (int i = 0; i < kernelSize; i++)
         {
             for (int j = 0; j < kernelSize; j++)

@@ -24,120 +24,55 @@ public class AvatarPainter : MonoBehaviour
     public Texture2D mask;
     public string prompt = "";
     public string neg_prompt = "";
-
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            ImageProcessing.Resize(mainScreenshot, 512,512);
-            ControlNetAPI.GetControlNetResult_Static(maskScreenshot, mainScreenshot, depthImage, prompt, neg_prompt);
-        }
-        if (Input.GetKeyDown(KeyCode.Y))
-        {
-            Pipeline2();
-        }
-        if (Input.GetKeyDown(KeyCode.U))
-        {
-            Pipeline3();
-        }
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            Pipeline4();
-        }
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            Screenshot.Screenshot_Static(mainCam);
-        }
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            Screenshot.Screenshot_Static(maskCam);
-        }
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            Screenshot.Screenshot_Static(modelCam);
-        }
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            FindMinScreenWindow();
-        }
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            PaintFromPose(inpaintedImage);
-        }
         if (Input.GetKeyDown(KeyCode.R))
         {
-            RotateAvatar.RotateAvatar_Static(mainAvatar, 45f);
+            RotateAll();
         }
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.S))
         {
-            RotateAvatar.RotateAvatar_Static(maskAvatar, 45f);
-        }
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            RotateAvatar.RotateAvatar_Static(modelAvatar, 45f);
-        }
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            Screenshot.Screenshot_Static(depthCam);
-        }
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            Debug.Log("Dilating mask.");
-            ImageProcessing.DilateMask_Static(maskScreenshot, KERNELSIZE);
+            ScreenshotAll();
         }
     }
 
-    void Pipeline1()
+    public void project()
     {
-        // fill front
-        Screenshot.Screenshot_Static(modelCam);
-        Screenshot.Screenshot_Static(maskCam);
-        Screenshot.Screenshot_Static(depthCam);
-        ControlNetAPI.GetControlNetResult_Static(maskScreenshot, modelScreenshot, depthImage, prompt, neg_prompt);
-        // inpaintedImage now has the correct image to project
-    }
-
-    void Pipeline2()
-    {
-        FindMinScreenWindow();
         PaintFromPose(inpaintedImage);
-        // Get back inpaint
-        RotateAvatar.RotateAvatar_Static(modelAvatar, 180f);
-        RotateAvatar.RotateAvatar_Static(maskAvatar, 180f);
-        RotateAvatar.RotateAvatar_Static(mainAvatar, 180f);
-        Screenshot.Screenshot_Static(modelCam);
-        Screenshot.Screenshot_Static(maskCam);
-        //ControlNetAPI.GetControlNetResult_Static(maskScreenshot, modelScreenshot, depthImage, prompt);
     }
 
-    void Pipeline3()
+
+    public void ScreenshotAll()
     {
-        // fill back
-        FindMinScreenWindow();
-        PaintFromPose(inpaintedImage);
-        RotateAvatar.RotateAvatar_Static(maskAvatar, 225f);
-        RotateAvatar.RotateAvatar_Static(mainAvatar, 225f);
+        Debug.Log("Taking screenshot...");
         Screenshot.Screenshot_Static(mainCam);
         Screenshot.Screenshot_Static(maskCam);
-        ImageProcessing.DilateMask_Static(maskScreenshot, KERNELSIZE);
-        //ControlNetAPI.GetControlNetResult_Static(maskScreenshot, mainScreenshot, depthImage, prompt);
+        Screenshot.Screenshot_Static(modelCam);
+        Screenshot.Screenshot_Static(depthCam);
     }
 
-    void Pipeline4()
+    public void RotateAll()
     {
-        FindMinScreenWindow();
-        PaintFromPose(inpaintedImage);
+        Rotate(modelAvatar, 45f);
+        Rotate(maskAvatar, 45f);
+        Rotate(mainAvatar, 45f);
     }
 
+    void Rotate(GameObject avatar, float angle)
+    {
+        float targetAngle = avatar.transform.rotation.eulerAngles.y + angle;
+        avatar.transform.rotation = Quaternion.Euler(0f, targetAngle, 0f);
+    }
 
     void SavePaintedTexture()
     {
         // send a raycast to centre of screen to get main texture
         // then save it. 
         RaycastHit hit;
-        Vector3 pos = new Vector3(512.0f, 512.0f, 0.0f);
+        Vector3 pos = new Vector3(256.0f, 256.0f, 0.0f);
         if (Physics.Raycast(mainCam.ScreenPointToRay(pos), out hit))
         {
+            Debug.Log("hi");
             SkinnedMeshRenderer rend = hit.transform.GetComponent<SkinnedMeshRenderer>();
             Texture2D tex = rend.material.mainTexture as Texture2D;
             Texture2D readable = DecompressTexture.Decompress_Static(tex);
@@ -157,6 +92,7 @@ public class AvatarPainter : MonoBehaviour
     {
         SkinnedMeshRenderer rend = hit.transform.GetComponent<SkinnedMeshRenderer>();
         MeshCollider meshCollider = hit.collider as MeshCollider;
+
         Texture2D tex = mask;
         if (!(rend == null || meshCollider == null))
         {
@@ -178,14 +114,16 @@ public class AvatarPainter : MonoBehaviour
             tex.SetPixel((int)pixelUV.x - 1, (int)pixelUV.y - 1, col);
             tex.Apply();
         }
-        
+
     }
 
     void PaintFromPose(Texture2D texture)
     {
-        Debug.Log("P pressed");
+        Debug.Log("P pressed!!");
+        FindMinScreenWindow();
 
         RaycastHit hit;
+
         for (int x = window[0]; x < window[2]; x++)
         {
             for (int y = window[1]; y < window[3]; y++)
@@ -194,12 +132,10 @@ public class AvatarPainter : MonoBehaviour
                 if (Physics.Raycast(mainCam.ScreenPointToRay(pos), out hit))
                 {
                     Color col = texture.GetPixel(x, y);
+                    Color mask_col = maskScreenshot.GetPixel(x, y);
                     col.a = 1.0f;
-                    bool is_green = col.g > col.r && col.g > col.b;
-                    //bool is_green = col.g > 180f && col.r < 70 && col.b < 70;
-                    if (!is_green)
+                    if (mask_col == Color.white)
                     {
-                        Debug.Log(col);
                         Paint(hit, col, false);
                         Paint(hit, Color.black, true);
                     }
@@ -211,7 +147,7 @@ public class AvatarPainter : MonoBehaviour
         SavePaintedTexture();
     }
 
-    void FindMinScreenWindow()
+    private void FindMinScreenWindow()
     {
         int min_x = 2000;
         int min_y = 2000;
