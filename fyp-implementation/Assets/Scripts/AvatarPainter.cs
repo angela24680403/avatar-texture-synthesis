@@ -34,9 +34,23 @@ public class AvatarPainter : MonoBehaviour
         {
             ScreenshotAll();
         }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            Project();
+        }
     }
 
-    public void project()
+    public void DilateMask()
+    {
+        ImageProcessing.DilateMask_Static(maskScreenshot, KERNELSIZE);
+    }
+
+    public void CallControlNet()
+    {
+        ControlNetAPI.GetControlNetResult_Static(maskScreenshot, mainScreenshot, depthImage, prompt, neg_prompt);
+    }
+
+    public void Project()
     {
         PaintFromPose(inpaintedImage);
     }
@@ -117,11 +131,34 @@ public class AvatarPainter : MonoBehaviour
 
     }
 
+    bool pt_valid(int x, int y)
+    {
+        Color mask_col = maskScreenshot.GetPixel(x, y);
+        if (mask_col == Color.white)
+        {
+            if (maskScreenshot.GetPixel(x, y + 1) == Color.white &&
+            maskScreenshot.GetPixel(x, y - 1) == Color.white &&
+            maskScreenshot.GetPixel(x + 1, y) == Color.white &&
+            maskScreenshot.GetPixel(x - 1, y) == Color.white &&
+            maskScreenshot.GetPixel(x + 1, y + 1) == Color.white &&
+            maskScreenshot.GetPixel(x - 1, y + 1) == Color.white &&
+            maskScreenshot.GetPixel(x + 1, y - 1) == Color.white &&
+            maskScreenshot.GetPixel(x - 1, y - 1) == Color.white)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     void PaintFromPose(Texture2D texture)
     {
-        Debug.Log("P pressed!!");
+        Debug.Log("P pressed!! View");
+        Debug.Log(window[0]);
+        Debug.Log(window[1]);
+        Debug.Log(window[2]);
+        Debug.Log(window[3]);
         FindMinScreenWindow();
-
         RaycastHit hit;
 
         for (int x = window[0]; x < window[2]; x++)
@@ -132,9 +169,9 @@ public class AvatarPainter : MonoBehaviour
                 if (Physics.Raycast(mainCam.ScreenPointToRay(pos), out hit))
                 {
                     Color col = texture.GetPixel(x, y);
-                    Color mask_col = maskScreenshot.GetPixel(x, y);
+
                     col.a = 1.0f;
-                    if (mask_col == Color.white)
+                    if (pt_valid(x, y))
                     {
                         Paint(hit, col, false);
                         Paint(hit, Color.black, true);
