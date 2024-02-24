@@ -131,19 +131,24 @@ public class AvatarPainter : MonoBehaviour
 
     }
 
+    bool is_white(Color col)
+    {
+        return col.r > 0.8 && col.r > 0.8 && col.r > 0.8;
+    }
+
     bool pt_valid(int x, int y)
     {
         Color mask_col = maskScreenshot.GetPixel(x, y);
         if (mask_col == Color.white)
         {
-            if (maskScreenshot.GetPixel(x, y + 1) == Color.white &&
-            maskScreenshot.GetPixel(x, y - 1) == Color.white &&
-            maskScreenshot.GetPixel(x + 1, y) == Color.white &&
-            maskScreenshot.GetPixel(x - 1, y) == Color.white &&
-            maskScreenshot.GetPixel(x + 1, y + 1) == Color.white &&
-            maskScreenshot.GetPixel(x - 1, y + 1) == Color.white &&
-            maskScreenshot.GetPixel(x + 1, y - 1) == Color.white &&
-            maskScreenshot.GetPixel(x - 1, y - 1) == Color.white)
+            if (is_white(maskScreenshot.GetPixel(x, y + 1)) &&
+            is_white(maskScreenshot.GetPixel(x, y - 1)) &&
+            is_white(maskScreenshot.GetPixel(x + 1, y)) &&
+            is_white(maskScreenshot.GetPixel(x - 1, y)) &&
+            is_white(maskScreenshot.GetPixel(x + 1, y + 1)) &&
+            is_white(maskScreenshot.GetPixel(x - 1, y + 1)) &&
+            is_white(maskScreenshot.GetPixel(x + 1, y - 1)) &&
+            is_white(maskScreenshot.GetPixel(x - 1, y - 1)))
             {
                 return true;
             }
@@ -154,16 +159,17 @@ public class AvatarPainter : MonoBehaviour
     void PaintFromPose(Texture2D texture)
     {
         Debug.Log("P pressed!! View");
-        Debug.Log(window[0]);
-        Debug.Log(window[1]);
-        Debug.Log(window[2]);
-        Debug.Log(window[3]);
-        FindMinScreenWindow();
+        // FindMinScreenWindow();
+        // Debug.Log(window[0]);
+        // Debug.Log(window[1]);
+        // Debug.Log(window[2]);
+        // Debug.Log(window[3]);
+
         RaycastHit hit;
 
-        for (int x = window[0]; x < window[2]; x++)
+        for (int x = 0; x < 512; x++)
         {
-            for (int y = window[1]; y < window[3]; y++)
+            for (int y = 0; y < 512; y++)
             {
                 Vector3 pos = new Vector3((float)x, (float)y, 0.0f);
                 if (Physics.Raycast(mainCam.ScreenPointToRay(pos), out hit))
@@ -171,6 +177,8 @@ public class AvatarPainter : MonoBehaviour
                     Color col = texture.GetPixel(x, y);
 
                     col.a = 1.0f;
+                    // Paint(hit, col, false);
+                    // Paint(hit, Color.black, true);
                     if (pt_valid(x, y))
                     {
                         Paint(hit, col, false);

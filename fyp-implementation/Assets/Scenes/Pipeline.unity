@@ -712,7 +712,7 @@ MonoBehaviour:
   mainScreenshot: {fileID: 2800000, guid: bea5d7c8d6e1f423799b250832188fe4, type: 3}
   maskScreenshot: {fileID: 2800000, guid: a886f5dbdf3054a8cb0c18aa70aaaea8, type: 3}
   modelScreenshot: {fileID: 2800000, guid: 17feae4e3788e45fd99b6e0c4e49db17, type: 3}
-  inpaintedImage: {fileID: 2800000, guid: c131f85747afc4147b5ee63daf61c75a, type: 3}
+  inpaintedImage: {fileID: 2800000, guid: ee0d727fff0274fff95da3e78bc51170, type: 3}
   depthImage: {fileID: 2800000, guid: dd0826408e37f4ffd818923bcb20cc91, type: 3}
   mask: {fileID: 2800000, guid: a57377e5d1d5749f1be52088d2be98df, type: 3}
   prompt: pink top with gold star patterns and short sleeves and jeans
@@ -12487,7 +12487,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: c131f85747afc4147b5ee63daf61c75a, type: 3}
+  m_Texture: {fileID: 2800000, guid: ee0d727fff0274fff95da3e78bc51170, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
