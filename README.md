@@ -1,6 +1,6 @@
 # TextureGen.AI: A ControlNet-Guided Approach to 3D Object Texture Style Transfer and Synthesis
 
-Welcome to the TextureGen.AI Repository! This tool aims to help designers and researchers to find optimal ControlNet parameters for texture style transfer and synthesis with a proof-of-concept pipeline to demonstration an end-to-end texture generation once the optimal parameters are found.
+Welcome to the TextureGen.AI Repository! This tool aims to help designers and researchers find optimal ControlNet parameters for texture style transfer and synthesis with a proof-of-concept pipeline to demonstrate an end-to-end texture generation once the optimal parameters are found.
 
 Key Features:
 
@@ -9,5 +9,14 @@ Key Features:
 - **Object rotation**: Allows object to be rotated so that uncovered regions can be exposed to the camera for the next forward-mapping projection.
 - **Mask generation and dilation**: Allow user to generate mask to highlight uncovered regions to be inpainted by the ControlNet, and add generality in the mask.
 - **Depth Camera**: Obtain depth information of the object geometry for the ControlNet to get more context of the scene.
+
+GUI demonstration:
+
+![Screenshot 2024-02-24 at 02 33 57](https://github.com/angela24680403/avatar-texture-synthesis/assets/72133521/6b209ebf-acb9-4dfd-b4c8-e1b2353e8131)
+
+![Screenshot 2024-02-24 at 02 34 21](https://github.com/angela24680403/avatar-texture-synthesis/assets/72133521/67c31b93-cc66-46d5-b1e0-61d329c9c08e)
+
+![Screenshot 2024-02-24 at 02 34 34](https://github.com/angela24680403/avatar-texture-synthesis/assets/72133521/4a18f5ef-d3fc-451d-b1c1-1c25a74982a5)
+
 
 
