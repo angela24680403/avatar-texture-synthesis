@@ -10,4 +10,6 @@ Key Features:
 - **Mask generation and dilation**: Allow user to generate mask to highlight uncovered regions to be inpainted by the ControlNet, and add generality in the mask.
 - **Depth Camera**: Obtain depth information of the object geometry for the ControlNet to get more context of the scene.
 
+Example screenshot of GUI, and the resulting texture after one projection based on a given prompt.
+![ControlNet](https://github.com/angela24680403/avatar-texture-synthesis/assets/72133521/0a13e30c-dcce-4237-b1da-90271fd3c155)
 
