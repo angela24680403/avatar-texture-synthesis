@@ -14,68 +14,42 @@ public class InpaintResponse
 
 public class ControlNetAPI : MonoBehaviour
 {
+    private static int count = 0;
     private static ControlNetAPI instance;
     private readonly string txt2img = "/sdapi/v1/txt2img";
     private readonly string img2img = "/sdapi/v1/img2img";
-    private readonly string sdWebUIApiEndpoint = "http://128.16.15.169:7860/";
-    // private var txt2imgInpaintArgs = new
-    // {
-    //     prompt = prompt,
-    //     batch_size = 1,
-    //     denoising_strength = 1.0,
-    //     steps = 30,
-    //     sampler = "DPM++ 2S a Karras",
-    //     alwayson_scripts = new
-    //     {
-    //         controlnet = new
-    //         {
-    //             args = new[]
-    //                 {
-    //                     new
-    //                     {
-    //                         enabled = true,
-    //                         input_image = imgB64,
-    //                         model = "control_v11p_sd15_inpaint [ebff9138]",
-    //                         module = "inpaint_only",
-    //                         mask = maskB64,
-    //                         weight = 1.0,
-    //                         control_mode = 0
-    //                     }, new
-    //                     {   enabled = true,
-    //                         input_image = depthB64,
-    //                         model = "control_v11f1p_sd15_depth [cfd03158]",
-    //                         module = "depth_midas",
-    //                         mask = "",
-    //                         weight = 1.0,
-    //                         control_mode = 1
-    //                     }
-    //                 }
-    //         }
-    //     }
-    // };
+    private readonly string sdWebUIApiEndpoint1 = "http://128.16.15.169:7860/";
+    private readonly string sdWebUIApiEndpoint2 = "http://128.16.14.135:7860/";
 
     private void Awake()
     {
         instance = this;
     }
-    public static void GetControlNetResult_Static(Texture2D mask, Texture2D image, Texture2D depth, string prompt, string neg_prompt)
+
+    public static void GetControlNetImg2Img_Static(Texture2D mask, Texture2D image, Texture2D depth, string prompt, string neg_prompt)
     {
-        instance.GetControlNetResult(mask, image, depth, prompt, neg_prompt);
+        instance.GetControlNetImg2Img(mask, image, depth, prompt, neg_prompt);
+        Debug.Log(count);
+        count++;
     }
-    private void GetControlNetResult(Texture2D mask, Texture2D image, Texture2D depth, string prompt, string neg_prompt)
+
+    public static void GetControlNetTxt2Img_Static(Texture2D depth, string prompt, string neg_prompt)
+    {
+        instance.GetControlNetTxt2Img(depth, prompt, neg_prompt);
+        Debug.Log(count);
+        count++;
+    }
+
+    private void GetControlNetImg2Img(Texture2D mask, Texture2D image, Texture2D depth, string prompt, string neg_prompt)
     {
         // Open and convert the mask image to base64 string
         string maskB64 = TextureToBase64(DecompressTexture.Decompress_Static(mask));
         // Open and convert the target image to base64 string
         string imgB64 = TextureToBase64(DecompressTexture.Decompress_Static(image));
         string depthB64 = TextureToBase64(DecompressTexture.Decompress_Static(depth));
-        string apiUrl = new Uri(new Uri(sdWebUIApiEndpoint), img2img).ToString();
-        StartCoroutine(SendRequest(apiUrl, imgB64, maskB64, depthB64, prompt, neg_prompt));
-    }
+        string apiUrl = new Uri(new Uri(sdWebUIApiEndpoint2), img2img).ToString();
 
-    IEnumerator SendRequest(string apiUrl, string imgB64, string maskB64, string depthB64, string prompt, string neg_prompt)
-    {
-        // var img2imgInpaintArgs2 = new
+        // var img2imgInpaintArgs1 = new
         // {
         //     prompt = prompt,
         //     negative_prompt = neg_prompt,
@@ -83,27 +57,9 @@ public class ControlNetAPI : MonoBehaviour
         //     height = 512,
         //     denoising_strength = 0.75,
         //     init_images = new List<string> { imgB64 },
-        //     //mask_content = 3,
-        //     mask = maskB64,
-        //     alwayson_scripts = new
-        //     {
-        //         controlnet = new
-        //         {
-        //             args = new[]
-        //             {
-        //                 new
-        //                 {   enabled = true,
-        //                     input_image = depthB64,
-        //                     model = "control_v11f1p_sd15_depth [cfd03158]",
-        //                     module = "none",
-        //                     weight = 1.0,
-        //                     control_mode = 0
-        //                 }
-        //             }
-        //         }
-        //     }
+        //     mask = depthB64
         // };
-        var img2imgInpaintArgs1 = new
+        var img2imgInpaintArgs = new
         {
             prompt = prompt,
             negative_prompt = neg_prompt,
@@ -111,43 +67,76 @@ public class ControlNetAPI : MonoBehaviour
             height = 512,
             denoising_strength = 0.75,
             init_images = new List<string> { imgB64 },
-            mask = depthB64
+            //mask_content = 3,
+            mask = maskB64,
+            alwayson_scripts = new
+            {
+                controlnet = new
+                {
+                    args = new[]
+                    {
+                        new
+                        {   enabled = true,
+                            input_image = depthB64,
+                            model = "control_v11f1p_sd15_depth [cfd03158]",
+                            module = "none",
+                            weight = 1.0,
+                            control_mode = 0
+                        }
+                    }
+                }
+            }
         };
+        string arguments = JsonConvert.SerializeObject(img2imgInpaintArgs);
+        Debug.Log("Sending Request");
+        StartCoroutine(SendRequest(apiUrl, arguments));
+        Debug.Log("End");
 
-        // var txt2imgInpaintArgs = new
-        // {
-        //     prompt = prompt,
-        //     batch_size = 1,
-        //     denoising_strength = 1.0,
-        //     steps = 30,
-        //     sampler = "DPM++ 2S a Karras",
-        //     alwayson_scripts = new
-        //     {
-        //         controlnet = new
-        //         {
-        //             args = new[]
-        //             {
-        //                 new
-        //                 {
-        //                     enabled = true,
-        //                     input_image = imgB64,
-        //                     model = "control_v11p_sd15_inpaint [ebff9138]",
-        //                     module = "inpaint_only",
-        //                     mask = maskB64,
-        //                     weight = 1.0,
-        //                     control_mode = 0
-        //                 }
-        //             }
-        //         }
-        //     }
-        // };
+    }
 
-        Debug.Log(apiUrl);
+    private void GetControlNetTxt2Img(Texture2D depth, string prompt, string neg_prompt)
+    {
+        string depthB64 = TextureToBase64(DecompressTexture.Decompress_Static(depth));
+        string apiUrl = new Uri(new Uri(sdWebUIApiEndpoint2), txt2img).ToString();
 
+        var txt2ImgArgs = new
+        {
+            prompt = prompt,
+            negative_prompt = neg_prompt,
+            width = 512,
+            height = 512,
+            denoising_strength = 0.75,
+            alwayson_scripts = new
+            {
+                controlnet = new
+                {
+                    args = new[]
+                    {
+                        new
+                        {   enabled = true,
+                            input_image = depthB64,
+                            model = "control_v11f1p_sd15_depth [cfd03158]",
+                            module = "none",
+                            weight = 1.0,
+                            control_mode = 0
+                        }
+                    }
+                }
+            }
+        };
+        string arguments = JsonConvert.SerializeObject(txt2ImgArgs);
+        Debug.Log("Sending Request");
+        StartCoroutine(SendRequest(apiUrl, arguments));
+        Debug.Log("End");
+
+    }
+
+    IEnumerator SendRequest(string apiUrl, string arguments)
+    {
         // Make a POST request to the API with the inpainting arguments
         using (UnityWebRequest request = new UnityWebRequest(apiUrl, "POST"))
         {
-            request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(img2imgInpaintArgs1)));
+            request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(arguments));
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
 

@@ -18,6 +18,7 @@ public class AvatarPainter : MonoBehaviour
     public Camera depthCam;
     public Texture2D mainScreenshot;
     public Texture2D maskScreenshot;
+    public Texture2D dilatedMaskScreenshot;
     public Texture2D modelScreenshot;
     public Texture2D inpaintedImage;
     public Texture2D depthImage;
@@ -38,6 +39,18 @@ public class AvatarPainter : MonoBehaviour
         {
             Project();
         }
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            DilateMask();
+        }
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            ControlNetDesign();
+        }
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            ControlNewViewFill();
+        }
     }
 
     public void DilateMask()
@@ -45,9 +58,14 @@ public class AvatarPainter : MonoBehaviour
         ImageProcessing.DilateMask_Static(maskScreenshot, KERNELSIZE);
     }
 
-    public void CallControlNet()
+    public void ControlNetDesign()
     {
-        ControlNetAPI.GetControlNetResult_Static(maskScreenshot, mainScreenshot, depthImage, prompt, neg_prompt);
+        ControlNetAPI.GetControlNetTxt2Img_Static(depthImage, prompt, neg_prompt);
+    }
+
+    public void ControlNewViewFill()
+    {
+        ControlNetAPI.GetControlNetImg2Img_Static(dilatedMaskScreenshot, mainScreenshot, depthImage, prompt, neg_prompt);
     }
 
     public void Project()
@@ -131,24 +149,24 @@ public class AvatarPainter : MonoBehaviour
 
     }
 
-    bool is_white(Color col)
+    bool not_black(Color col)
     {
-        return col.r > 0.8 && col.r > 0.8 && col.r > 0.8;
+        return col.r > 0 && col.r > 0 && col.r > 0;
     }
 
     bool pt_valid(int x, int y)
     {
-        Color mask_col = maskScreenshot.GetPixel(x, y);
-        if (mask_col == Color.white)
+        Color mask_col = modelScreenshot.GetPixel(x, y);
+        if (not_black(mask_col))
         {
-            if (is_white(maskScreenshot.GetPixel(x, y + 1)) &&
-            is_white(maskScreenshot.GetPixel(x, y - 1)) &&
-            is_white(maskScreenshot.GetPixel(x + 1, y)) &&
-            is_white(maskScreenshot.GetPixel(x - 1, y)) &&
-            is_white(maskScreenshot.GetPixel(x + 1, y + 1)) &&
-            is_white(maskScreenshot.GetPixel(x - 1, y + 1)) &&
-            is_white(maskScreenshot.GetPixel(x + 1, y - 1)) &&
-            is_white(maskScreenshot.GetPixel(x - 1, y - 1)))
+            if (not_black(modelScreenshot.GetPixel(x, y + 1)) &&
+            not_black(modelScreenshot.GetPixel(x, y - 1)) &&
+            not_black(modelScreenshot.GetPixel(x + 1, y)) &&
+            not_black(modelScreenshot.GetPixel(x - 1, y)) &&
+            not_black(modelScreenshot.GetPixel(x + 1, y + 1)) &&
+            not_black(modelScreenshot.GetPixel(x - 1, y + 1)) &&
+            not_black(modelScreenshot.GetPixel(x + 1, y - 1)) &&
+            not_black(modelScreenshot.GetPixel(x - 1, y - 1)))
             {
                 return true;
             }
@@ -159,11 +177,6 @@ public class AvatarPainter : MonoBehaviour
     void PaintFromPose(Texture2D texture)
     {
         Debug.Log("P pressed!! View");
-        // FindMinScreenWindow();
-        // Debug.Log(window[0]);
-        // Debug.Log(window[1]);
-        // Debug.Log(window[2]);
-        // Debug.Log(window[3]);
 
         RaycastHit hit;
 
@@ -192,30 +205,4 @@ public class AvatarPainter : MonoBehaviour
         SavePaintedTexture();
     }
 
-    private void FindMinScreenWindow()
-    {
-        int min_x = 2000;
-        int min_y = 2000;
-        int max_x = 0;
-        int max_y = 0;
-        RaycastHit hit;
-
-        for (int x = 0; x < Screen.width; x++)
-        {
-            for (int y = 0; y < Screen.height; y++)
-            {
-                Vector3 pos = new Vector3((float)x, (float)y, 0.0f);
-                if (Physics.Raycast(mainCam.ScreenPointToRay(pos), out hit))
-                {
-                    if (pos.x < min_x) { min_x = x; }
-                    if (pos.y < min_y) { min_y = y; }
-                    if (pos.x > max_x) { max_x = x; }
-                    if (pos.y > max_y) { max_y = y; }
-
-                }
-            }
-        }
-        window = new int[] { min_x, min_y, max_x, max_y };
-        Debug.Log("Window set");
-    }
 }

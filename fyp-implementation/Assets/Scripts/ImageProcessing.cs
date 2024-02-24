@@ -80,13 +80,13 @@ public class ImageProcessing : MonoBehaviour
         dilatedMask.Apply();
         Texture2D decompressedTexture = DecompressTexture.Decompress_Static(dilatedMask);
         byte[] byteArray = decompressedTexture.EncodeToPNG();
-        System.IO.File.WriteAllBytes(Application.dataPath + "/Screenshots/Mask.png", byteArray);
+        System.IO.File.WriteAllBytes(Application.dataPath + "/Screenshots/Dilated.png", byteArray);
         Debug.Log("Saved Dilated.png");
     }
 
     bool UpdatePixelValue(int xCoord, int yCoord, Texture2D mask, int kernelSize)
     {
-         bool has_white = false;
+        bool has_white = false;
         for (int i = 0; i < kernelSize; i++)
         {
             for (int j = 0; j < kernelSize; j++)
