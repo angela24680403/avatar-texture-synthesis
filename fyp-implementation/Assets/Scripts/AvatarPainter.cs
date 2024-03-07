@@ -5,10 +5,10 @@ using UnityEngine;
 public class AvatarPainter : MonoBehaviour
 {
     private bool controlnet_running = false;
-    private int KERNELSIZE = 7;
     private int[] window = { 0, 0, 0, 0 };
     private int count = 0;
     [SerializeField]
+    public int KERNELSIZE = 7;
     public GameObject mainAvatar;
     public GameObject modelAvatar;
     public GameObject maskAvatar;
@@ -16,15 +16,10 @@ public class AvatarPainter : MonoBehaviour
     public Camera modelCam;
     public Camera maskCam;
     public Camera depthCam;
-    public Texture2D mainScreenshot;
-    public Texture2D maskScreenshot;
-    public Texture2D dilatedMaskScreenshot;
     public Texture2D modelScreenshot;
+    public Texture2D maskScreenshot;
     public Texture2D inpaintedImage;
-    public Texture2D depthImage;
-    public Texture2D mask;
-    public string prompt = "";
-    public string neg_prompt = "";
+    public Texture2D maskTexture;
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.R))
@@ -43,30 +38,14 @@ public class AvatarPainter : MonoBehaviour
         {
             DilateMask();
         }
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            ControlNetDesign();
-        }
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            ControlNewViewFill();
-        }
     }
+
 
     public void DilateMask()
     {
         ImageProcessing.DilateMask_Static(maskScreenshot, KERNELSIZE);
     }
 
-    public void ControlNetDesign()
-    {
-        ControlNetAPI.GetControlNetTxt2Img_Static(depthImage, prompt, neg_prompt);
-    }
-
-    public void ControlNewViewFill()
-    {
-        ControlNetAPI.GetControlNetImg2Img_Static(dilatedMaskScreenshot, mainScreenshot, depthImage, prompt, neg_prompt);
-    }
 
     public void Project()
     {
@@ -112,7 +91,7 @@ public class AvatarPainter : MonoBehaviour
             System.IO.File.WriteAllBytes(Application.dataPath + "/Textures/Saved/Skin.png", byteArray);
             Debug.Log("Saved texture Skin.png");
         }
-        Texture2D readableMask = DecompressTexture.Decompress_Static(mask);
+        Texture2D readableMask = DecompressTexture.Decompress_Static(maskTexture);
         byte[] maskByteArray = readableMask.EncodeToPNG();
         System.IO.File.WriteAllBytes(Application.dataPath + "/Textures/Saved/Mask.png", maskByteArray);
         Debug.Log("Saved texture Mask.png");
@@ -125,7 +104,7 @@ public class AvatarPainter : MonoBehaviour
         SkinnedMeshRenderer rend = hit.transform.GetComponent<SkinnedMeshRenderer>();
         MeshCollider meshCollider = hit.collider as MeshCollider;
 
-        Texture2D tex = mask;
+        Texture2D tex = maskTexture;
         if (!(rend == null || meshCollider == null))
         {
             if (is_mask != true)

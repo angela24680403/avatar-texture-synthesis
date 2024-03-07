@@ -14,121 +14,36 @@ public class InpaintResponse
 
 public class ControlNetAPI : MonoBehaviour
 {
+    private static string sdWebUIApiEndpoint = "http://128.16.14.135:7860/";
+    private static string txt2img = "/sdapi/v1/txt2img";
+    private static string img2img = "/sdapi/v1/img2img";
     private static int count = 0;
     private static ControlNetAPI instance;
-    private readonly string txt2img = "/sdapi/v1/txt2img";
-    private readonly string img2img = "/sdapi/v1/img2img";
-    private readonly string sdWebUIApiEndpoint1 = "http://128.16.15.169:7860/";
-    private readonly string sdWebUIApiEndpoint2 = "http://128.16.14.135:7860/";
-
     private void Awake()
     {
         instance = this;
     }
-
-    public static void GetControlNetImg2Img_Static(Texture2D mask, Texture2D image, Texture2D depth, string prompt, string neg_prompt)
+    public static void CallImg2ImgAPI(string arguments)
     {
-        instance.GetControlNetImg2Img(mask, image, depth, prompt, neg_prompt);
-        Debug.Log(count);
+        Debug.Log("Sending Img2Img Request");
+        string apiUrl = new Uri(new Uri(sdWebUIApiEndpoint), img2img).ToString();
+        instance.StaticCallAPI(apiUrl, arguments);
+        Debug.Log("End");
         count++;
     }
 
-    public static void GetControlNetTxt2Img_Static(Texture2D depth, string prompt, string neg_prompt)
+    public static void CallTxt2ImgAPI(string arguments)
     {
-        instance.GetControlNetTxt2Img(depth, prompt, neg_prompt);
-        Debug.Log(count);
+        Debug.Log("Sending Txt2Img Request");
+        string apiUrl = new Uri(new Uri(sdWebUIApiEndpoint), txt2img).ToString();
+        instance.StaticCallAPI(apiUrl, arguments);
+        Debug.Log("End");
         count++;
     }
 
-    private void GetControlNetImg2Img(Texture2D mask, Texture2D image, Texture2D depth, string prompt, string neg_prompt)
+    private void StaticCallAPI(string apiUrl, string arguments)
     {
-        // Open and convert the mask image to base64 string
-        string maskB64 = TextureToBase64(DecompressTexture.Decompress_Static(mask));
-        // Open and convert the target image to base64 string
-        string imgB64 = TextureToBase64(DecompressTexture.Decompress_Static(image));
-        string depthB64 = TextureToBase64(DecompressTexture.Decompress_Static(depth));
-        string apiUrl = new Uri(new Uri(sdWebUIApiEndpoint2), img2img).ToString();
-
-        // var img2imgInpaintArgs1 = new
-        // {
-        //     prompt = prompt,
-        //     negative_prompt = neg_prompt,
-        //     width = 512,
-        //     height = 512,
-        //     denoising_strength = 0.75,
-        //     init_images = new List<string> { imgB64 },
-        //     mask = depthB64
-        // };
-        var img2imgInpaintArgs = new
-        {
-            prompt = prompt,
-            negative_prompt = neg_prompt,
-            width = 512,
-            height = 512,
-            denoising_strength = 0.75,
-            init_images = new List<string> { imgB64 },
-            //mask_content = 3,
-            mask = maskB64,
-            alwayson_scripts = new
-            {
-                controlnet = new
-                {
-                    args = new[]
-                    {
-                        new
-                        {   enabled = true,
-                            input_image = depthB64,
-                            model = "control_v11f1p_sd15_depth [cfd03158]",
-                            module = "none",
-                            weight = 1.0,
-                            control_mode = 0
-                        }
-                    }
-                }
-            }
-        };
-        string arguments = JsonConvert.SerializeObject(img2imgInpaintArgs);
-        Debug.Log("Sending Request");
         StartCoroutine(SendRequest(apiUrl, arguments));
-        Debug.Log("End");
-
-    }
-
-    private void GetControlNetTxt2Img(Texture2D depth, string prompt, string neg_prompt)
-    {
-        string depthB64 = TextureToBase64(DecompressTexture.Decompress_Static(depth));
-        string apiUrl = new Uri(new Uri(sdWebUIApiEndpoint2), txt2img).ToString();
-
-        var txt2ImgArgs = new
-        {
-            prompt = prompt,
-            negative_prompt = neg_prompt,
-            width = 512,
-            height = 512,
-            denoising_strength = 0.75,
-            alwayson_scripts = new
-            {
-                controlnet = new
-                {
-                    args = new[]
-                    {
-                        new
-                        {   enabled = true,
-                            input_image = depthB64,
-                            model = "control_v11f1p_sd15_depth [cfd03158]",
-                            module = "none",
-                            weight = 1.0,
-                            control_mode = 0
-                        }
-                    }
-                }
-            }
-        };
-        string arguments = JsonConvert.SerializeObject(txt2ImgArgs);
-        Debug.Log("Sending Request");
-        StartCoroutine(SendRequest(apiUrl, arguments));
-        Debug.Log("End");
-
     }
 
     IEnumerator SendRequest(string apiUrl, string arguments)
@@ -169,10 +84,5 @@ public class ControlNetAPI : MonoBehaviour
             }
         }
 
-    }
-    private string TextureToBase64(Texture2D texture)
-    {
-        byte[] imageBytes = texture.EncodeToPNG();
-        return Convert.ToBase64String(imageBytes);
     }
 }

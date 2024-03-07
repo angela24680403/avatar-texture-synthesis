@@ -715,7 +715,7 @@ MonoBehaviour:
   modelScreenshot: {fileID: 2800000, guid: 17feae4e3788e45fd99b6e0c4e49db17, type: 3}
   inpaintedImage: {fileID: 2800000, guid: ee0d727fff0274fff95da3e78bc51170, type: 3}
   depthImage: {fileID: 2800000, guid: dd0826408e37f4ffd818923bcb20cc91, type: 3}
-  mask: {fileID: 2800000, guid: a57377e5d1d5749f1be52088d2be98df, type: 3}
+  maskTexture: {fileID: 0}
   prompt: pink top with gold star patterns and short sleeves and jeans
   neg_prompt: 
 --- !u!1 &106629054
@@ -8092,6 +8092,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1330508904}
   - component: {fileID: 1330508905}
+  - component: {fileID: 1330508906}
   m_Layer: 0
   m_Name: ControlNetAPI
   m_TagString: Untagged
@@ -8126,6 +8127,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6140cc4e2f2547a083afa7ddaaf8489, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1330508906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1330508903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 935f142ab48684e1eb9ca0017eb08f12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainScreenshot: {fileID: 0}
+  maskScreenshot: {fileID: 0}
+  dilatedMaskScreenshot: {fileID: 0}
+  modelScreenshot: {fileID: 0}
+  inpaintedImage: {fileID: 0}
+  depthImage: {fileID: 0}
+  prompt: 
+  negPrompt: 
+  CFG: 0
+  denoisingStrength: 0.75
+  controlNetDepthWeight: 1
+  maskContent: 3
 --- !u!1 &1331072404
 GameObject:
   m_ObjectHideFlags: 0
