@@ -75,7 +75,7 @@ public class AvatarPainter : MonoBehaviour
         avatar.transform.rotation = Quaternion.Euler(0f, targetAngle, 0f);
     }
 
-    void SavePaintedTexture()
+    public void SavePaintedTexture()
     {
         // send a raycast to centre of screen to get main texture
         // then save it. 
@@ -83,17 +83,16 @@ public class AvatarPainter : MonoBehaviour
         Vector3 pos = new Vector3(256.0f, 256.0f, 0.0f);
         if (Physics.Raycast(mainCam.ScreenPointToRay(pos), out hit))
         {
-            Debug.Log("hi");
             SkinnedMeshRenderer rend = hit.transform.GetComponent<SkinnedMeshRenderer>();
             Texture2D tex = rend.material.mainTexture as Texture2D;
             Texture2D readable = DecompressTexture.Decompress_Static(tex);
             byte[] byteArray = readable.EncodeToPNG();
-            System.IO.File.WriteAllBytes(Application.dataPath + "/Textures/Saved/Skin.png", byteArray);
+            System.IO.File.WriteAllBytes(Application.dataPath + "/Textures/Saved/Skin" + count.ToString() + ".png", byteArray);
             Debug.Log("Saved texture Skin.png");
         }
         Texture2D readableMask = DecompressTexture.Decompress_Static(maskTexture);
         byte[] maskByteArray = readableMask.EncodeToPNG();
-        System.IO.File.WriteAllBytes(Application.dataPath + "/Textures/Saved/Mask.png", maskByteArray);
+        System.IO.File.WriteAllBytes(Application.dataPath + "/Textures/Saved/Mask" + count.ToString() + ".png", maskByteArray);
         Debug.Log("Saved texture Mask.png");
         count++;
 
