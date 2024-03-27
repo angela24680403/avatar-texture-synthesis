@@ -4,5 +4,14 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Main.unity
+    guid: eaa0d1d9cff0946dd9fc0866fab70bdc
+  - enabled: 1
+    path: Assets/Scenes/Texture Synthesis.unity
+    guid: 2a01f35615fe44570b282875963f4080
+  - enabled: 1
+    path: Assets/Scenes/Texture Modification.unity
+    guid: addc75948b1c2469b82a3688693bba74
   m_configObjects: {}

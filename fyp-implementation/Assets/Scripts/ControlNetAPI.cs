@@ -14,7 +14,8 @@ public class InpaintResponse
 
 public class ControlNetAPI : MonoBehaviour
 {
-    private static string sdWebUIApiEndpoint = "http://128.16.14.135:7860/";
+    //private static string sdWebUIApiEndpoint = "http://128.16.14.135:7860/";
+    private static string sdWebUIApiEndpoint = "http://128.16.15.169:7860/";
     private static string txt2img = "/sdapi/v1/txt2img";
     private static string img2img = "/sdapi/v1/img2img";
     private static int count = 0;
@@ -54,7 +55,7 @@ public class ControlNetAPI : MonoBehaviour
             request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(arguments));
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
-
+            Debug.Log(apiUrl);
             yield return request.SendWebRequest();
 
             if (request.result != UnityWebRequest.Result.Success)

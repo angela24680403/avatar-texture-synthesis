@@ -28,6 +28,11 @@ public class ControlNetCaller : MonoBehaviour
         ControlNetAPI.CallImg2ImgAPI(NewViewFillImg2ImgArgs());
     }
 
+    public void ControlNetModifyTexture()
+    {
+        ControlNetAPI.CallImg2ImgAPI(TextureModificationImg2ImgArgs());
+    }
+
     public string NewDesignTxt2ImgArgs()
     {
         string depthB64 = TextureToBase64(DecompressTexture.Decompress_Static(depthScreenshot));
@@ -94,6 +99,26 @@ public class ControlNetCaller : MonoBehaviour
                     }
                 }
             }
+        };
+        string arguments = JsonConvert.SerializeObject(img2imgInpaintArgs);
+        return arguments;
+    }
+
+    public string TextureModificationImg2ImgArgs()
+    {
+
+        string maskB64 = TextureToBase64(DecompressTexture.Decompress_Static(dilatedMaskScreenshot));
+        string imgB64 = TextureToBase64(DecompressTexture.Decompress_Static(mainScreenshot));
+        string depthB64 = TextureToBase64(DecompressTexture.Decompress_Static(depthScreenshot));
+        var img2imgInpaintArgs = new
+        {
+            prompt = prompt,
+            negative_prompt = negPrompt,
+            width = 512,
+            height = 512,
+            denoising_strength = 0.75,
+            init_images = new List<string> { imgB64 },
+            mask = depthB64
         };
         string arguments = JsonConvert.SerializeObject(img2imgInpaintArgs);
         return arguments;
