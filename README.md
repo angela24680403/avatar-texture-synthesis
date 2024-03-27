@@ -1,22 +1,49 @@
 # TextureGen.AI: A ControlNet-Guided Approach to 3D Object Texture Style Transfer and Synthesis
 
-Welcome to the TextureGen.AI Repository! This tool aims to help designers and researchers find optimal ControlNet parameters for texture style transfer and synthesis with a proof-of-concept pipeline to demonstrate an end-to-end texture generation once the optimal parameters are found.
+Welcome to the TextureGen.AI Repository! This tool aims to help designers and researchers find optimal ControlNet parameters for texture modification and synthesis with a proof-of-concept pipeline to demonstrate an end-to-end texture generation once the optimal parameters are found.
 
 Key Features:
 
-- **ControlNet API Integration**: Utilising the Inpaint and Depth modules to generate new designs for avatar appearance based on text prompt, as well as generating images that allows novel-view synthesis for a 360-degree design generation.
-- **Camera System**: A simple system that allows all views of the 3D object to be covered for forward-mapping projection.
-- **Object rotation**: Allows object to be rotated so that uncovered regions can be exposed to the camera for the next forward-mapping projection.
-- **Mask generation and dilation**: Allow user to generate mask to highlight uncovered regions to be inpainted by the ControlNet, and add generality in the mask.
+- **ControlNet API Txt2Img and Img2Img Integration**: Utilising the Inpaint and Depth modules to generate new designs for avatar appearance based on text prompt, as well as generating images that allow novel-view synthesis for a 360-degree design generation.
+- **Camera System**: A simple system that allows dynamic views of the 3D object to be covered for forward-mapping projection.
+- **Object rotation**: Allows an object to be rotated so that uncovered regions can be exposed to the camera for the next forward-mapping projection.
+- **Mask generation and dilation**: Allow the user to generate a mask to highlight uncovered regions to be inpainted by the ControlNet, and add generality in the mask.
 - **Depth Camera**: Obtain depth information of the object geometry for the ControlNet to get more context of the scene.
 
 GUI demonstration:
 
-![Screenshot 2024-02-24 at 02 33 57](https://github.com/angela24680403/avatar-texture-synthesis/assets/72133521/6b209ebf-acb9-4dfd-b4c8-e1b2353e8131)
+**Texture Modification**: Modifies an existing texture, such as adding star patters to an existing top.
+<img width="881" alt="Screenshot 2024-03-27 at 15 57 26" src="https://github.com/angela24680403/avatar-texture-synthesis/assets/72133521/cb0aa0a2-47a6-4555-a4ee-9fb7c45d4e8d">
 
-![Screenshot 2024-02-24 at 02 34 21](https://github.com/angela24680403/avatar-texture-synthesis/assets/72133521/67c31b93-cc66-46d5-b1e0-61d329c9c08e)
+**Texture Synthesis**: Synthesises a new texture from a blank white image.
 
-![Screenshot 2024-02-24 at 02 34 34](https://github.com/angela24680403/avatar-texture-synthesis/assets/72133521/4a18f5ef-d3fc-451d-b1c1-1c25a74982a5)
+This includes two steps:
+1. Generate New Design.
+2. Rotate Camera, generate a new view fill.
+
+   
+<img width="887" alt="Screenshot 2024-03-27 at 16 07 01" src="https://github.com/angela24680403/avatar-texture-synthesis/assets/72133521/a92ee523-1562-42d7-874d-6775c5eca036">
+
+Here is a simple walk-through:
+First, configure parameters to generate a desired front view design, then project this onto the main avatar.
+
+<img width="492" alt="Screenshot 2024-03-27 at 16 11 00" src="https://github.com/angela24680403/avatar-texture-synthesis/assets/72133521/5c7f895f-6b92-40e6-aa58-60a29e7941eb">
+
+Next, rotate the avatar, take screenshots and change parameter configurations for new view fill.
+
+<img width="497" alt="Screenshot 2024-03-27 at 16 11 14" src="https://github.com/angela24680403/avatar-texture-synthesis/assets/72133521/7b9db0a5-3848-4832-b332-facf902fbb06">
+
+The new view fill response image should appear under the projected button. Project this onto the avatar.
+
+<img width="496" alt="Screenshot 2024-03-27 at 16 16 00" src="https://github.com/angela24680403/avatar-texture-synthesis/assets/72133521/13e14b0d-07f5-45c9-8aeb-38e5cdb4300d">
+
+Repeat this until the avatar is fully covered.
+
+
+
+
+
+
 
 
 
