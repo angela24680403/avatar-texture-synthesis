@@ -12,7 +12,7 @@ public class ControlNetCaller : MonoBehaviour
     public Texture2D depthScreenshot;
     public string prompt = "";
     public string negPrompt = "";
-    public float CFG = 0.0f;
+    public float CFG = 7.0f;
     public float denoisingStrength = 0.75f;
     public float controlNetDepthWeight = 1.0f;
 
@@ -41,8 +41,7 @@ public class ControlNetCaller : MonoBehaviour
         {
             prompt = prompt,
             negative_prompt = negPrompt,
-            width = 512,
-            height = 512,
+            cfg_scale = CFG,
             denoising_strength = denoisingStrength,
             alwayson_scripts = new
             {
@@ -76,11 +75,10 @@ public class ControlNetCaller : MonoBehaviour
         {
             prompt = prompt,
             negative_prompt = negPrompt,
-            width = 512,
-            height = 512,
             denoising_strength = denoisingStrength,
             init_images = new List<string> { imgB64 },
-            //mask_content = 3,
+            mask_content = maskContent,
+            cfg_scale = CFG,
             mask = maskB64,
             alwayson_scripts = new
             {
@@ -114,9 +112,8 @@ public class ControlNetCaller : MonoBehaviour
         {
             prompt = prompt,
             negative_prompt = negPrompt,
-            width = 512,
-            height = 512,
-            denoising_strength = 0.75,
+            cfg_scale = CFG,
+            denoising_strength = denoisingStrength,
             init_images = new List<string> { imgB64 },
             mask = depthB64
         };
