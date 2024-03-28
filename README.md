@@ -12,8 +12,10 @@ Key Features:
 
 GUI demonstration:
 
-**Texture Modification**: Modifies an existing texture, such as adding star patters to an existing top.
+**Texture Modification**: Modifies an existing texture, such as adding star patterns to an existing top.
 <img width="881" alt="Screenshot 2024-03-27 at 15 57 26" src="https://github.com/angela24680403/avatar-texture-synthesis/assets/72133521/cb0aa0a2-47a6-4555-a4ee-9fb7c45d4e8d">
+
+You can access the tutorial here: [Texture Modification Tutorial](https://youtu.be/AQRaxg3edHc)
 
 **Texture Synthesis**: Synthesises a new texture from a blank white image.
 
