@@ -8617,12 +8617,14 @@ MonoBehaviour:
   dilatedMaskScreenshot: {fileID: 2800000, guid: 290ac9dbface041bcb340725822a3ecf, type: 3}
   modelScreenshot: {fileID: 2800000, guid: 17feae4e3788e45fd99b6e0c4e49db17, type: 3}
   depthScreenshot: {fileID: 2800000, guid: dd0826408e37f4ffd818923bcb20cc91, type: 3}
-  prompt: An avatar wearing pink top and jeans.
+  prompt: (((flower patterns))), pink top, blue jeans, octane render, skin-coloured
+    arms
   negPrompt: 
   CFG: 7
   denoisingStrength: 0.75
   controlNetDepthWeight: 1
   maskContent: 1
+  seed: 1766376416
 --- !u!1 &1331072404
 GameObject:
   m_ObjectHideFlags: 0
