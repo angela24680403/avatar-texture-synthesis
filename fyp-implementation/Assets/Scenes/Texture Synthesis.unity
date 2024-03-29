@@ -4683,7 +4683,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 104569537}
         m_TargetAssemblyTypeName: AvatarPainter, Assembly-CSharp
-        m_MethodName: Project
+        m_MethodName: ProjectWithMaskFill
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -8889,6 +8889,7 @@ MonoBehaviour:
   denoisingStrength: 0.75
   controlNetDepthWeight: 1
   maskContent: 3
+  seed: -1
 --- !u!1 &1331072404
 GameObject:
   m_ObjectHideFlags: 0

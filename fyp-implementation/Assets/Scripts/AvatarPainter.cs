@@ -49,7 +49,12 @@ public class AvatarPainter : MonoBehaviour
 
     public void Project()
     {
-        PaintFromPose(inpaintedImage);
+        PaintFromPose(inpaintedImage, false);
+    }
+
+    public void ProjectWithMaskFill()
+    {
+        PaintFromPose(inpaintedImage, true);
     }
 
 
@@ -152,7 +157,7 @@ public class AvatarPainter : MonoBehaviour
         return false;
     }
 
-    void PaintFromPose(Texture2D texture)
+    void PaintFromPose(Texture2D texture, bool fill_mask)
     {
         Debug.Log("P pressed!! View");
 
@@ -168,12 +173,13 @@ public class AvatarPainter : MonoBehaviour
                     Color col = texture.GetPixel(x, y);
 
                     col.a = 1.0f;
-                    // Paint(hit, col, false);
-                    // Paint(hit, Color.black, true);
                     if (pt_valid(x, y))
                     {
                         Paint(hit, col, false);
-                        Paint(hit, Color.black, true);
+                        if (fill_mask){
+                            Paint(hit, Color.black, true);
+                        }
+                        
                     }
 
                 }

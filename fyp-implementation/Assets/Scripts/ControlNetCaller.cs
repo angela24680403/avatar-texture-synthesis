@@ -15,8 +15,8 @@ public class ControlNetCaller : MonoBehaviour
     public float CFG = 7.0f;
     public float denoisingStrength = 0.75f;
     public float controlNetDepthWeight = 1.0f;
-
     public int maskContent = 3;
+    public int seed = -1;
 
     public void ControlNetDesign()
     {
@@ -111,6 +111,7 @@ public class ControlNetCaller : MonoBehaviour
         var img2imgInpaintArgs = new
         {
             prompt = prompt,
+            seed = seed,
             negative_prompt = negPrompt,
             cfg_scale = CFG,
             denoising_strength = denoisingStrength,
