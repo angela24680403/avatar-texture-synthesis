@@ -16,9 +16,11 @@ GUI demonstration:
 <img width="881" alt="Screenshot 2024-03-27 at 15 57 26" src="https://github.com/angela24680403/avatar-texture-synthesis/assets/72133521/cb0aa0a2-47a6-4555-a4ee-9fb7c45d4e8d">
 
 Prompt: (((detailed floral patterns)), pink top, blue jeans, octane render, skin-coloured arms.
+
 <img width="506" alt="Screenshot 2024-03-29 at 20 18 34" src="https://github.com/angela24680403/avatar-texture-synthesis/assets/72133521/68e87933-2134-4e1a-9c77-4bcf27c54668">
 
-Prompt: ((detailed yellow butterflies)), pink top, blue jeans, octane render, skin-coloured arms
+Prompt: ((detailed yellow butterflies)), pink top, blue jeans, octane render, skin-coloured arms.
+
 <img width="538" alt="Screenshot 2024-03-29 at 20 19 10" src="https://github.com/angela24680403/avatar-texture-synthesis/assets/72133521/406641da-433d-41f1-9cf5-aff161988c3f">
 
 
