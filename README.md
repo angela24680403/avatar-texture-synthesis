@@ -4,7 +4,7 @@ Welcome to the TextureGen.AI Repository! This tool aims to help designers and re
 
 Key Features:
 
-- **ControlNet API Txt2Img and Img2Img Integration**: Utilising the Inpaint and Depth modules to generate new designs for avatar appearance based on text prompt, as well as generating images that allow novel-view synthesis for a 360-degree design generation.
+- **Stable Diffusion (Txt2Img and Img2Img) and ControlNet API Integration**: Utilising the Inpaint and Depth modules to generate new designs for avatar appearance based on text prompt, as well as generating images that allow novel-view synthesis for a 360-degree design generation.
 - **Camera System**: A simple system that allows dynamic views of the 3D object to be covered for forward-mapping projection.
 - **Object rotation**: Allows an object to be rotated so that uncovered regions can be exposed to the camera for the next forward-mapping projection.
 - **Mask generation and dilation**: Allow the user to generate a mask to highlight uncovered regions to be inpainted by the ControlNet, and add generality in the mask.
