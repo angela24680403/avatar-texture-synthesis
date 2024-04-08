@@ -23,6 +23,10 @@ Prompt: ((detailed yellow butterflies)), pink top, blue jeans, octane render, sk
 
 <img width="538" alt="Screenshot 2024-03-29 at 20 19 10" src="https://github.com/angela24680403/avatar-texture-synthesis/assets/72133521/406641da-433d-41f1-9cf5-aff161988c3f">
 
+More possible modification examples:
+
+<img width="424" alt="Screenshot 2024-04-09 at 00 44 54" src="https://github.com/angela24680403/avatar-texture-synthesis/assets/72133521/4355a89f-5873-4e81-b1f5-243a65b0b003">
+
 
 
 You can access the tutorial here: [Texture Modification Tutorial](https://youtu.be/AQRaxg3edHc)
