@@ -10,8 +10,7 @@ public class ImageProcessing : MonoBehaviour
     {
         instance = this;
     }
-
-
+    
     public static void DilateMask_Static(Texture2D mask, int kernalSize)
     {
         instance.DilateMask(mask, kernalSize);
@@ -54,7 +53,6 @@ public class ImageProcessing : MonoBehaviour
     {
         Texture2D dilatedMask = new Texture2D(mask.width, mask.height);
         int padding = kernelSize / 2;
-
 
         for (int x = 0; x < mask.width; x++)
         {

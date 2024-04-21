@@ -48,9 +48,8 @@ Shader "Hidden/DepthShader"
                 DecodeDepthNormal(tex2D(_CameraDepthNormalsTexture, i.uv), NormalDepth.w, NormalDepth.xyz);
                 
                 float x = NormalDepth.w;
-                NormalDepth.w =  log(15*x);//(1 / -pow(5*x + 1,2)) + 1;
-                //float normalised_x = 1.0 / (1.0 + exp(-x));
-
+                NormalDepth.w =  log(15*x);
+                
                 if (NormalDepth.w < 0.0)
                 {
                     NormalDepth.w = 0.0;

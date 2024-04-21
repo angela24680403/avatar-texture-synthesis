@@ -18,6 +18,8 @@ public class ControlNetCaller : MonoBehaviour
     public int maskContent = 3;
     public int seed = -1;
 
+    public int controlMode = 0;
+
     public void ControlNetDesign()
     {
         ControlNetAPI.CallTxt2ImgAPI(NewDesignTxt2ImgArgs());
@@ -41,6 +43,7 @@ public class ControlNetCaller : MonoBehaviour
         {
             prompt = prompt,
             negative_prompt = negPrompt,
+            seed = seed,
             cfg_scale = CFG,
             denoising_strength = denoisingStrength,
             alwayson_scripts = new
@@ -55,7 +58,7 @@ public class ControlNetCaller : MonoBehaviour
                             model = "control_v11f1p_sd15_depth [cfd03158]",
                             module = "none",
                             weight = controlNetDepthWeight,
-                            control_mode = 0
+                            control_mode = controlMode
                         }
                     }
                 }
@@ -75,6 +78,7 @@ public class ControlNetCaller : MonoBehaviour
         {
             prompt = prompt,
             negative_prompt = negPrompt,
+            seed = seed,
             denoising_strength = denoisingStrength,
             init_images = new List<string> { imgB64 },
             mask_content = maskContent,
@@ -92,7 +96,7 @@ public class ControlNetCaller : MonoBehaviour
                             model = "control_v11f1p_sd15_depth [cfd03158]",
                             module = "none",
                             weight = controlNetDepthWeight,
-                            control_mode = 0
+                            control_mode = controlMode
                         }
                     }
                 }
@@ -111,8 +115,8 @@ public class ControlNetCaller : MonoBehaviour
         var img2imgInpaintArgs = new
         {
             prompt = prompt,
-            seed = seed,
             negative_prompt = negPrompt,
+            seed = seed,
             cfg_scale = CFG,
             denoising_strength = denoisingStrength,
             init_images = new List<string> { imgB64 },
