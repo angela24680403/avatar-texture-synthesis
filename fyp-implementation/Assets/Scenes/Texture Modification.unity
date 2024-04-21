@@ -579,7 +579,7 @@ MonoBehaviour:
   depthCam: {fileID: 901315603}
   modelScreenshot: {fileID: 2800000, guid: 17feae4e3788e45fd99b6e0c4e49db17, type: 3}
   maskScreenshot: {fileID: 2800000, guid: a886f5dbdf3054a8cb0c18aa70aaaea8, type: 3}
-  inpaintedImage: {fileID: 2800000, guid: 6cd37371fbe9142e78430aff7778fc31, type: 3}
+  inpaintedImage: {fileID: 2800000, guid: 02f7319eb8e1c49a2aaf8280b923d32d, type: 3}
   maskTexture: {fileID: 2800000, guid: a57377e5d1d5749f1be52088d2be98df, type: 3}
 --- !u!1 &106629054
 GameObject:
@@ -5301,8 +5301,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee1127358096948a0b5a0319009f5673, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 901315603}
-  mat: {fileID: 2100000, guid: 9fbd01fda123f497196c26f8acc32d04, type: 2}
+  depthCam: {fileID: 901315603}
+  depthMat: {fileID: 2100000, guid: 9fbd01fda123f497196c26f8acc32d04, type: 2}
 --- !u!20 &901315603
 Camera:
   m_ObjectHideFlags: 0
@@ -8622,9 +8622,10 @@ MonoBehaviour:
   negPrompt: 
   CFG: 7
   denoisingStrength: 0.75
-  controlNetDepthWeight: 1
   maskContent: 1
-  seed: 1766376416
+  seed: -1
+  controlNetDepthWeight: 1
+  controlMode: 0
 --- !u!1 &1331072404
 GameObject:
   m_ObjectHideFlags: 0
@@ -13834,7 +13835,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 6cd37371fbe9142e78430aff7778fc31, type: 3}
+  m_Texture: {fileID: 2800000, guid: 02f7319eb8e1c49a2aaf8280b923d32d, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0

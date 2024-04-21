@@ -2,32 +2,59 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// This class includes all the image processing functions that
+/// can be potentially used to manipulate the mask for better 
+/// SD/ControlNet outputs. Some functions are not used in the 
+/// main system.
+/// </summary>
 public class ImageProcessing : MonoBehaviour
 {
+    /// <summary>
+    /// The ImageProcessing static instance.
+    /// </summary>
     private static ImageProcessing instance;
 
+    /// <summary>
+    /// Initialise the ImageProcessing static instance.
+    /// </summary>
     private void Awake()
     {
         instance = this;
     }
-    
+
+    /// <summary>
+    /// The DilateMask static function.
+    /// </summary>
     public static void DilateMask_Static(Texture2D mask, int kernalSize)
     {
         instance.DilateMask(mask, kernalSize);
 
     }
 
-    public static Texture2D Resize(Texture2D texture2D, int new_w, int new_h)
+    /// <summary>
+    /// Rezize a given texture to new width and height. (Not used)
+    /// </summary>
+    /// <param name="image">The Texture2D image to be resized.</param>
+    /// <param name="newW">The new width.</param>
+    /// <param name="newH">The new height.</param>
+    /// <returns>A Texture2D image with the new width and height.</returns>
+    public static Texture2D Resize(Texture2D image, int newW, int newH)
     {
-        RenderTexture rt = new RenderTexture(new_w, new_h, 24);
+        RenderTexture rt = new RenderTexture(newW, newH, 24);
         RenderTexture.active = rt;
-        Graphics.Blit(texture2D, rt);
-        Texture2D result = new Texture2D(new_w, new_h);
-        result.ReadPixels(new Rect(0, 0, new_w, new_h), 0, 0);
+        Graphics.Blit(image, rt);
+        Texture2D result = new Texture2D(newW, newH);
+        result.ReadPixels(new Rect(0, 0, newW, newH), 0, 0);
         result.Apply();
         return result;
     }
 
+    /// <summary>
+    /// Remove black pixels of an image. (Not used)
+    /// </summary>
+    /// <param name="image">The Texture2D image to be processed.</param>
+    /// <returns>A Texture2D image without black pixels.</returns>
     void RemoveBlackPixels(Texture2D image)
     {
         Texture2D newImage = new Texture2D(image.width, image.height);
@@ -49,6 +76,12 @@ public class ImageProcessing : MonoBehaviour
         Debug.Log("Saved background removed image RemovedBg.png");
     }
 
+    /// <summary>
+    /// Dilates the mask image. 
+    /// </summary>
+    /// <param name="mask">The Texture2D mask to be processed.</param>
+    /// <param name="kernelSize">The kernel size.</param>
+    /// <returns>The diluted image.</returns>
     void DilateMask(Texture2D mask, int kernelSize)
     {
         Texture2D dilatedMask = new Texture2D(mask.width, mask.height);
@@ -82,6 +115,15 @@ public class ImageProcessing : MonoBehaviour
         Debug.Log("Saved Dilated.png");
     }
 
+    /// <summary>
+    /// Checks if there is a white neighbouring pixel to the 
+    /// centre pixel. If so, returns a boolean showing that the 
+    /// main pixel is white, otherwise returns false.
+    /// </summary>
+    /// <param name="xCoord">The x coordinate of centre pixel.</param>
+    /// <param name="yCoord">The y coordinate of centre pixel.</param>
+    /// <param name="mask">The Texture2D mask to be processed.</param>
+    /// <param name="kernelSize">The kernel size.</param>
     bool UpdatePixelValue(int xCoord, int yCoord, Texture2D mask, int kernelSize)
     {
         bool has_white = false;

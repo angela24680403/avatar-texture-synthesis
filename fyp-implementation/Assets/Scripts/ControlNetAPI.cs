@@ -24,6 +24,10 @@ public class InpaintResponse
 /// </summary>
 public class ControlNetAPI : MonoBehaviour
 {
+    /// <summary>
+    /// The width and height of the response.
+    /// </summary>
+    private static int IMAGE_SIZE = 512;
 
     /// <summary>
     /// The SD Web UI API end point.
@@ -45,6 +49,9 @@ public class ControlNetAPI : MonoBehaviour
     /// </summary>
     private static ControlNetAPI instance;
 
+    /// <summary>
+    /// Initializing the ControlNetAPI static instance.
+    /// </summary>
     private void Awake()
     {
         instance = this;
@@ -115,7 +122,7 @@ public class ControlNetAPI : MonoBehaviour
                 byte[] imageBytes = Convert.FromBase64String(imageB64);
                 Texture2D outputTexture = new Texture2D(2, 2);
                 outputTexture.LoadImage(imageBytes);
-                outputTexture = ImageProcessing.Resize(outputTexture, 512, 512);
+                outputTexture = ImageProcessing.Resize(outputTexture, IMAGE_SIZE, IMAGE_SIZE);
                 byte[] byteArray = outputTexture.EncodeToPNG();
                 System.IO.File.WriteAllBytes(Application.dataPath + "/Screenshots/Inpainted.png", byteArray);
                 Debug.Log("Saved Inpainted.png");

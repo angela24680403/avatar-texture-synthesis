@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// This script combines all avatar painting functions such as taking
+/// This class combines all avatar painting functions such as taking
 /// screenshots, rotating the avatars, dilating masks, and projecting
 /// an image onto the main avatar texture.
 /// </summary>
