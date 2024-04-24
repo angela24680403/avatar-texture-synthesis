@@ -348,7 +348,7 @@ MonoBehaviour:
   depthCam: {fileID: 901315603}
   modelScreenshot: {fileID: 2800000, guid: 17feae4e3788e45fd99b6e0c4e49db17, type: 3}
   maskScreenshot: {fileID: 2800000, guid: a886f5dbdf3054a8cb0c18aa70aaaea8, type: 3}
-  inpaintedImage: {fileID: 2800000, guid: 6cd37371fbe9142e78430aff7778fc31, type: 3}
+  inpaintedImage: {fileID: 2800000, guid: 02f7319eb8e1c49a2aaf8280b923d32d, type: 3}
   maskTexture: {fileID: 2800000, guid: a57377e5d1d5749f1be52088d2be98df, type: 3}
 --- !u!1 &114167473
 GameObject:
@@ -11020,7 +11020,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 6cd37371fbe9142e78430aff7778fc31, type: 3}
+  m_Texture: {fileID: 2800000, guid: 02f7319eb8e1c49a2aaf8280b923d32d, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
