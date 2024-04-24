@@ -1,6 +1,6 @@
 # TextureGen.AI: A ControlNet-Guided Approach to 3D Object Texture Modification and Synthesis
 
-Welcome to the TextureGen.AI Repository! This tool aims to help designers and researchers find optimal ControlNet parameters for texture modification and synthesis with a proof-of-concept pipeline to demonstrate an end-to-end texture generation once the optimal parameters are found.
+Welcome to the TextureGen.AI Repository! This tool aims to help designers and researchers find optimal ControlNet parameters for texture modification and synthesis with a proof-of-concept pipeline to demonstrate an end-to-end texture generation once the optimal parameters are found. Please clone this repository and open the fyp-implementation folder on Unity Hub to access the project.
 
 Key Features:
 
