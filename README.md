@@ -55,6 +55,8 @@ The new view fill response image should appear under the projected button. Proje
 
 Repeat this until the avatar is fully covered.
 
+Report Link: https://www.dropbox.com/scl/fi/lkceua2qt3h5lqzzepr42/FYP_Report.pdf?rlkey=d7nqfxts2behogasltom4jcsz&st=w8urdf75&dl=0
+
 
 
 
